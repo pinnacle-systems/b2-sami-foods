@@ -1,8 +1,22 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Truck, Shield, Leaf } from "lucide-react";
 
+const B2_IMAGES = Array.from({ length: 12 }).map((_, i) => `/B2/img${i + 1}.jpeg`);
+
 export function Hero() {
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % B2_IMAGES.length);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className="relative min-h-screen pt-20 md:pt-24 overflow-hidden bg-gradient-to-b from-secondary to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
@@ -89,15 +103,21 @@ export function Hero() {
               <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse-slow" />
               <div className="absolute inset-4 rounded-full bg-primary/10" />
 
-              {/* Main Image */}
-              <div className="absolute inset-8 rounded-full overflow-hidden shadow-2xl">
-                <Image
-                  src="/images/hero-fruits.jpg"
-                  alt="Fresh organic fruits and vegetables"
-                  fill
-                  className="object-cover"
-                  priority
-                />
+              {/* Main Image Slideshow */}
+              <div className="absolute inset-8 rounded-full overflow-hidden shadow-2xl bg-muted">
+                {B2_IMAGES.map((src, i) => (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt={`Organic product ${i + 1}`}
+                    fill
+                    className={`object-cover transition-opacity duration-1000 ${
+                      i === currentIdx ? "opacity-100 z-10" : "opacity-0 z-0"
+                    }`}
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={i === 0}
+                  />
+                ))}
               </div>
 
               {/* Floating Elements */}

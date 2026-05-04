@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Leaf, Facebook, Twitter, Instagram, Youtube, Mail } from "lucide-react";
 import { footerLinks } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -41,8 +42,14 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <Leaf className="w-5 h-5 text-primary-foreground" />
+              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
+                <Image
+                  src="/navlogo.png"   // make sure file name matches
+                  alt="Logo"
+                  width={50}
+                  height={50}
+                  className="object-cover"
+                />
               </div>
               <span className="text-xl font-bold">
                 B2{"   "}   <span className="text-primary">Sami Foods</span>
@@ -129,7 +136,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
-            <p>© 2026 OrganicMarket. All rights reserved.</p>
+            <p>© 2026 Pinnacle Systems. All rights reserved.</p>
             <div className="flex gap-6">
               <Link href="/privacy" className="hover:text-primary transition-colors">
                 Privacy Policy

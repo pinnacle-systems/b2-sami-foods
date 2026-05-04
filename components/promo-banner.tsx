@@ -58,7 +58,7 @@ export function PromoBanner() {
             {/* Image */}
             <div className="relative h-80 lg:h-full min-h-[400px] hidden lg:block">
               <Image
-                src="/images/promo-basket.jpg"
+                src="/Masalas/ban.jpg"
                 alt="Fresh organic produce basket"
                 fill
                 className="object-cover object-center"

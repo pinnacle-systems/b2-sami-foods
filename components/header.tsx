@@ -20,8 +20,8 @@ export function Header() {
               <Image
                 src="/navlogo.png"   // make sure file name matches
                 alt="Logo"
-                width={40}
-                height={40}
+                width={50}
+                height={50}
                 className="object-cover"
               />
             </div>
