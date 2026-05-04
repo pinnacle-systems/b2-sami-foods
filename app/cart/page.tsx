@@ -46,7 +46,7 @@ export default function CartPage() {
                   <div className="flex-grow flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
                     <div>
                       <h3 className="font-semibold text-lg">{item.product.name}</h3>
-                      <p className="text-primary font-bold">${item.product.price.toFixed(2)}</p>
+                      <p className="text-primary font-bold">₹{item.product.price.toFixed(2)}</p>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -90,11 +90,11 @@ export default function CartPage() {
               <div className="space-y-3 text-sm mb-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="font-medium">${cartTotal.toFixed(2)}</span>
+                  <span className="font-medium">₹{cartTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span className="font-medium">{cartTotal > 50 ? "Free" : "$5.00"}</span>
+                  <span className="font-medium">{cartTotal > 500 ? "Free" : "₹50.00"}</span>
                 </div>
               </div>
               
@@ -102,7 +102,7 @@ export default function CartPage() {
                 <div className="flex justify-between items-center">
                   <span className="font-bold">Total</span>
                   <span className="font-bold text-xl text-primary">
-                    ${(cartTotal + (cartTotal > 50 || cartTotal === 0 ? 0 : 5)).toFixed(2)}
+                    ₹{(cartTotal + (cartTotal > 500 || cartTotal === 0 ? 0 : 50)).toFixed(2)}
                   </span>
                 </div>
               </div>

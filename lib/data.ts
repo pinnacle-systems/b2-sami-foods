@@ -24,22 +24,22 @@ export const categories = [
 
 export const products = [
   // Podi
-  { id: 1, name: "Idly Podi", price: 4.99, image: "/B2/idlypodi.jpeg", category: "podi", rating: 4.9, reviews: 89, badge: "Popular" },
-  { id: 2, name: "Ellu Podi", price: 5.49, image: "/B2/ellusathapodi.jpeg", category: "podi", rating: 4.8, reviews: 56 },
-  { id: 3, name: "Moringa Podi", price: 6.99, image: "/B2/murungaikeeraisathampodi.jpeg", category: "podi", rating: 4.7, reviews: 42 },
-  { id: 4, name: "Garlic Podi", price: 4.29, image: "/B2/poondusathapodi.jpeg", category: "podi", rating: 4.9, reviews: 110, badge: "Best Seller" },
-  { id: 5, name: "Parupu Podi", price: 5.99, image: "/B2/paruppupodi.jpeg", category: "podi", rating: 4.6, reviews: 34 },
-  { id: 6, name: "Rasam Podi", price: 3.99, image: "/B2/rasampodi.jpeg", category: "podi", rating: 4.8, reviews: 145 },
+  { id: 1, name: "Idly Podi", price: 49, originalPrice: 69, image: "/B2/idlypodi.jpeg", category: "podi", rating: 4.9, reviews: 89, badge: "Popular" },
+  { id: 2, name: "Ellu Podi", price: 75, originalPrice: 85, image: "/B2/ellusathapodi.jpeg", category: "podi", rating: 4.8, reviews: 56 },
+  { id: 3, name: "Moringa Podi", price: 99, originalPrice: 149, image: "/B2/murungaikeeraisathampodi.jpeg", category: "podi", rating: 4.7, reviews: 42 },
+  { id: 4, name: "Garlic Podi", price: 80, originalPrice: 90, image: "/B2/poondusathapodi.jpeg", category: "podi", rating: 4.9, reviews: 110, badge: "Best Seller" },
+  { id: 5, name: "Parupu Podi", price: 95, originalPrice: 105, image: "/B2/paruppupodi.jpeg", category: "podi", rating: 4.6, reviews: 34 },
+  { id: 6, name: "Rasam Podi", price: 65, originalPrice: 75, image: "/B2/rasampodi.jpeg", category: "podi", rating: 4.8, reviews: 145 },
   
   // Mix
-  { id: 7, name: "Karuppu Kavuni Kanji", price: 8.99, image: "/B2/karupukanunikanjimix.jpeg", category: "mix", rating: 5.0, reviews: 200, badge: "Healthy" },
+  { id: 7, name: "Karuppu Kavuni Kanji", price: 149, originalPrice: 199, image: "/B2/karupukanunikanjimix.jpeg", category: "mix", rating: 5.0, reviews: 200, badge: "Healthy" },
   
   // Masala
-  { id: 8, name: "Mutton Masala", price: 6.49, image: "/B2/muttonmasala.jpeg", category: "masala", rating: 4.8, reviews: 88 },
-  { id: 9, name: "Sambar Masala", price: 4.49, image: "/B2/sambarpodi.jpeg", category: "masala", rating: 4.7, reviews: 92 },
-  { id: 10, name: "Chicken Masala", price: 6.99, image: "/B2/chickenmasala.jpeg", category: "masala", rating: 4.9, reviews: 150, badge: "Popular" },
-  { id: 11, name: "Biriyani Masala", price: 7.49, image: "/B2/biriyanimasala.jpeg", category: "masala", rating: 4.9, reviews: 210 },
-  { id: 12, name: "Kari Masala", price: 5.99, image: "/B2/karimasala.jpeg", category: "masala", rating: 4.6, reviews: 45 },
+  { id: 8, name: "Mutton Masala", price: 69, originalPrice: 99, image: "/B2/muttonmasala.jpeg", category: "masala", rating: 4.8, reviews: 88 },
+  { id: 9, name: "Sambar Masala", price: 49, originalPrice: 69, image: "/B2/sambarpodi.jpeg", category: "masala", rating: 4.7, reviews: 92 },
+  { id: 10, name: "Chicken Masala", price: 59, originalPrice: 69, image: "/B2/chickenmasala.jpeg", category: "masala", rating: 4.9, reviews: 150, badge: "Popular" },
+  { id: 11, name: "Biriyani Masala", price: 75, originalPrice: 85, image: "/B2/biriyanimasala.jpeg", category: "masala", rating: 4.9, reviews: 210 },
+  { id: 12, name: "Kari Masala", price: 69, originalPrice: 99, image: "/B2/karimasala.jpeg", category: "masala", rating: 4.6, reviews: 45 },
 ];
 
 export const testimonials = [
