@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Menu, X, Leaf } from "lucide-react";
+import { ShoppingCart, Menu, X, Heart } from "lucide-react";
 import { navLinks } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useCart } from "@/components/cart-provider";
+
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount] = useState(3);
+  const { cartCount, wishlist } = useCart();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
@@ -45,14 +47,23 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <button className="relative p-2 hover:bg-muted rounded-full transition-colors">
+            <Link href="/wishlist" className="relative p-2 hover:bg-muted rounded-full transition-colors hidden sm:flex">
+              <Heart className="w-6 h-6 text-foreground" />
+              {wishlist.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
+
+            <Link href="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
               <ShoppingCart className="w-6 h-6 text-foreground" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
-            </button>
+            </Link>
 
             <Button className="hidden md:flex bg-primary hover:bg-accent text-primary-foreground rounded-full px-6">
               Shop Now

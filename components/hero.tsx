@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Truck, Shield, Leaf } from "lucide-react";
+import { products } from "@/lib/data";
 
-const B2_IMAGES = Array.from({ length: 12 }).map((_, i) => `/B2/img${i + 1}.jpeg`);
+const B2_IMAGES = products.map((p) => p.image);
 
 export function Hero() {
   const [currentIdx, setCurrentIdx] = useState(0);

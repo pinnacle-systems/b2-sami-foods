@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock } from "lucide-react";
+import { products } from "@/lib/data";
 
 export function PromoBanner() {
   return (
@@ -55,16 +56,28 @@ export function PromoBanner() {
               </div>
             </div>
 
-            {/* Image */}
-            <div className="relative h-80 lg:h-full min-h-[400px] hidden lg:block">
-              <Image
-                src="/Masalas/ban.jpg"
-                alt="Fresh organic produce basket"
-                fill
-                className="object-cover object-center"
-              />
-              {/* Decorative overlay */}
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-primary/50" />
+            {/* Image Marquee */}
+            <div className="relative h-80 lg:h-full min-h-[400px] hidden lg:block overflow-hidden rounded-3xl bg-black/5 shadow-inner">
+              <div className="absolute inset-x-0 w-full animate-marquee grid grid-cols-2 gap-4 p-4">
+                {/* We double the products array so the marquee can seamlessly loop */}
+                {[...products, ...products].map((product, idx) => {
+                  return (
+                    <div key={`${product.id}-${idx}`} className="relative w-full h-32 md:h-48 rounded-2xl overflow-hidden shadow-md bg-white">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Decorative overlays */}
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent to-primary/40 pointer-events-none" />
+              <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-secondary to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-secondary to-transparent pointer-events-none" />
             </div>
           </div>
 

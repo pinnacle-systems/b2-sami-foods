@@ -1,114 +1,45 @@
 export const categories = [
   {
     id: 1,
-    name: "",
-    description: "",
-    image: "/Masalas/chk.jpeg",
-    itemCount: 45,
+    name: "Podi",
+    description: "Authentic homemade podi varieties",
+    image: "/B2/idlypodi.jpeg",
+    itemCount: 6,
   },
   {
     id: 2,
-    name: "",
-    description: "",
-    image: "/Masalas/muttonbanner.jpeg",
-    itemCount: 62,
+    name: "Mix",
+    description: "Healthy and instant mixes",
+    image: "/B2/karupukanunikanjimix.jpeg",
+    itemCount: 1,
   },
   {
     id: 3,
-    name: "",
-    description: "",
-    image: "/Masalas/glass.webp",
-    itemCount: 28,
-  },
-  {
-    id: 4,
-    name: "",
-    description: "",
-    image: "/Masalas/bir.jpg",
-    itemCount: 35,
+    name: "Masala",
+    description: "Aromatic spice blends for everyday cooking",
+    image: "/B2/chickenmasala.jpeg",
+    itemCount: 5,
   },
 ];
 
 export const products = [
-
-  {
-    id: 2,
-    name: "Mutton Pepper Fry",
-    price: 5.49,
-    image: "/Masalas/muttonpepper.jpg",
-    category: "Mutton Masalas",
-    rating: 4.9,
-    reviews: 89,
-    badge: "Popular",
-  },
-  {
-    id: 3,
-    name: "Mutton Masala",
-    price: 3.29,
-    image: "/Masalas/muttonmasala.jpg",
-    category: "Mutton Masalas",
-    rating: 4.7,
-    reviews: 56,
-  },
-  {
-    id: 4,
-    name: "Chicken Masala",
-    price: 6.99,
-    image: "/Masalas/chikenmasala.jpeg",
-    category: "Chicken Masalas",
-    rating: 4.9,
-    reviews: 203,
-    badge: "Best Seller",
-  },
-  {
-    id: 5,
-    name: "Chicken Pepper Masala",
-    price: 2.99,
-    image: "/Masalas/chickenpepper.jpeg",
-    category: "Chicken Masalas",
-    rating: 4.6,
-    reviews: 178,
-  },
-  {
-    id: 6,
-    name: "Chicken Curry Masala",
-    price: 3.99,
-    originalPrice: 4.99,
-    image: "/Masalas/chickencurry.jpeg",
-    category: "Chicken Masalas",
-    rating: 4.5,
-    reviews: 67,
-    badge: "Sale",
-  },
-  {
-    id: 7,
-    name: "Rasam Powder",
-    price: 4.49,
-    image: "/Masalas/rasam_powder_packet.png",
-    category: "Daily Essentials",
-    rating: 4.8,
-    reviews: 145,
-  },
-  {
-    id: 8,
-    name: "Cumin powder",
-    price: 4.29,
-    image: "/Masalas/cum.png",
-    category: "Daily Essentials",
-    rating: 4.7,
-    reviews: 92,
-  },
-  {
-    id: 1,
-    name: "Coriander Powder",
-    price: 4.99,
-    originalPrice: 6.99,
-    image: "/Masalas/cor.jpg",
-    category: "Daily Essentials",
-    rating: 4.8,
-    reviews: 124,
-    badge: "Sale",
-  },
+  // Podi
+  { id: 1, name: "Idly Podi", price: 4.99, image: "/B2/idlypodi.jpeg", category: "podi", rating: 4.9, reviews: 89, badge: "Popular" },
+  { id: 2, name: "Ellu Podi", price: 5.49, image: "/B2/ellusathapodi.jpeg", category: "podi", rating: 4.8, reviews: 56 },
+  { id: 3, name: "Moringa Podi", price: 6.99, image: "/B2/murungaikeeraisathampodi.jpeg", category: "podi", rating: 4.7, reviews: 42 },
+  { id: 4, name: "Garlic Podi", price: 4.29, image: "/B2/poondusathapodi.jpeg", category: "podi", rating: 4.9, reviews: 110, badge: "Best Seller" },
+  { id: 5, name: "Parupu Podi", price: 5.99, image: "/B2/paruppupodi.jpeg", category: "podi", rating: 4.6, reviews: 34 },
+  { id: 6, name: "Rasam Podi", price: 3.99, image: "/B2/rasampodi.jpeg", category: "podi", rating: 4.8, reviews: 145 },
+  
+  // Mix
+  { id: 7, name: "Karuppu Kavuni Kanji", price: 8.99, image: "/B2/karupukanunikanjimix.jpeg", category: "mix", rating: 5.0, reviews: 200, badge: "Healthy" },
+  
+  // Masala
+  { id: 8, name: "Mutton Masala", price: 6.49, image: "/B2/muttonmasala.jpeg", category: "masala", rating: 4.8, reviews: 88 },
+  { id: 9, name: "Sambar Masala", price: 4.49, image: "/B2/sambarpodi.jpeg", category: "masala", rating: 4.7, reviews: 92 },
+  { id: 10, name: "Chicken Masala", price: 6.99, image: "/B2/chickenmasala.jpeg", category: "masala", rating: 4.9, reviews: 150, badge: "Popular" },
+  { id: 11, name: "Biriyani Masala", price: 7.49, image: "/B2/biriyanimasala.jpeg", category: "masala", rating: 4.9, reviews: 210 },
+  { id: 12, name: "Kari Masala", price: 5.99, image: "/B2/karimasala.jpeg", category: "masala", rating: 4.6, reviews: 45 },
 ];
 
 export const testimonials = [
@@ -143,7 +74,7 @@ export const testimonials = [
 
 export const navLinks = [
   { name: "Home", href: "/" },
-  { name: "Shop", href: "#" },
+  { name: "Shop", href: "/shop" },
   { name: "About", href: "/#" },
   { name: "Contact", href: "/#" },
 ];

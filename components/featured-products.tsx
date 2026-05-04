@@ -2,6 +2,7 @@ import { products } from "@/lib/data";
 import { ProductCard } from "./product-card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function FeaturedProducts() {
   return (
@@ -23,17 +24,20 @@ export function FeaturedProducts() {
           </div>
           <Button
             variant="outline"
+            asChild
             className="rounded-full border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6 w-fit"
           >
-            View All Products
-            <ArrowRight className="ml-2 w-4 h-4" />
+            <Link href="/shop">
+              View All Products
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Link>
           </Button>
         </div>
 
         {/* Products Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} {...product} />
+          {products.slice(0, 8).map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </div>

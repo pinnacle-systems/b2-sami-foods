@@ -16,7 +16,11 @@ export function CategoryCard({
   itemCount,
 }: CategoryCardProps) {
   return (
-    <Link href={`/shop/${name.toLowerCase().replace(" ", "-")}`} className="group">
+    <Link 
+      href={`/shop/${name.toLowerCase().replace(" ", "-")}`} 
+      className="group block scroll-mt-24" 
+      id={`category-${name.toLowerCase().replace(" ", "-")}`}
+    >
       <div className="relative overflow-hidden rounded-3xl bg-card shadow-sm hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
         {/* Image */}
         <div className="relative h-48 overflow-hidden">
