@@ -27,9 +27,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const isWishlisted = isInWishlist(product.id);
 
   return (
-    <div className="group bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col border border-border">
+    <div className="group bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col border border-border w-full max-w-[220px] mx-auto">
       {/* Image Container */}
-      <div className="relative h-48 bg-muted overflow-hidden transform-gpu">
+      <div className="relative h-44 bg-muted overflow-hidden transform-gpu">
         <Image
           src={product.image}
           alt={product.name}
@@ -40,7 +40,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Badge */}
         {product.badge && (
           <div
-            className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${
+            className={`absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-semibold ${
               product.badge === "Sale"
                 ? "bg-destructive text-white"
                 : product.badge === "Popular"
@@ -68,10 +68,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-3 flex-grow flex flex-col">
-        <span className="text-[10px] leading-tight text-primary font-medium uppercase tracking-wide">
+        <span className="text-[9px] leading-tight text-primary font-medium uppercase tracking-wide">
           {product.category}
         </span>
-        <h3 className="text-sm font-semibold text-foreground mt-0.5 mb-1 group-hover:text-primary transition-colors line-clamp-1">
+        <h3 className="text-[11px] font-semibold text-foreground mt-0.5 mb-1 group-hover:text-primary transition-colors line-clamp-1">
           {product.name}
         </h3>
 
@@ -89,7 +89,7 @@ export function ProductCard({ product }: ProductCardProps) {
               />
             ))}
           </div>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             ({product.reviews})
           </span>
         </div>
@@ -97,9 +97,9 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Price & Actions */}
         <div className="mt-auto flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-base font-bold text-primary">₹{product.price.toFixed(2)}</span>
+            <span className="text-[12px] font-bold text-primary">₹{product.price.toFixed(2)}</span>
             {product.originalPrice && (
-              <span className="text-[10px] text-muted-foreground line-through">
+              <span className="text-[9px] text-muted-foreground line-through">
                 ₹{product.originalPrice.toFixed(2)}
               </span>
             )}
@@ -109,7 +109,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {qty === 0 ? (
               <Button
                 onClick={() => addToCart(product, 1)}
-                className="w-full h-8 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+                className="w-full h-8 rounded-full text-[10px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <ShoppingCart className="w-3 h-3 mr-1.5" />
                 Add to Cart

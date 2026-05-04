@@ -51,7 +51,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {categoryProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
