@@ -32,26 +32,26 @@ export const categories = [
 export const products = [
   // Podi
   { id: 1, name: "Idly Podi", price: 49, originalPrice: 69, image: "/B2/idlypodi.jpeg", category: "podi", rating: 4.9, reviews: 89, badge: "Popular" },
-  { id: 2, name: "Ellu Podi", price: 75, originalPrice: 85, image: "/B2/ellusathapodi.jpeg", category: "podi", rating: 4.8, reviews: 56 },
-  { id: 3, name: "Moringa Podi", price: 99, originalPrice: 149, image: "/B2/murungaikeeraisathampodi.jpeg", category: "podi", rating: 4.7, reviews: 42 },
-  { id: 4, name: "Garlic Podi", price: 80, originalPrice: 90, image: "/B2/poondusathapodi.jpeg", category: "podi", rating: 4.9, reviews: 110, badge: "Best Seller" },
-  { id: 5, name: "Parupu Podi", price: 95, originalPrice: 105, image: "/B2/paruppupodi.jpeg", category: "podi", rating: 4.6, reviews: 34 },
+  { id: 2, name: "Ellu Rice Podi", price: 75, originalPrice: 85, image: "/B2/ellusathapodi.jpeg", category: "podi", rating: 4.8, reviews: 56 },
+  { id: 3, name: "Moringa Rice Podi", price: 99, originalPrice: 149, image: "/B2/murungaikeeraisathampodi.jpeg", category: "podi", rating: 4.7, reviews: 42 },
+  { id: 4, name: "Garlic Rice Podi", price: 80, originalPrice: 90, image: "/B2/poondusathapodi.jpeg", category: "podi", rating: 4.9, reviews: 110, badge: "Best Seller" },
+  { id: 5, name: "Toor Dal Podi", price: 95, originalPrice: 105, image: "/B2/paruppupodi.jpeg", category: "podi", rating: 4.6, reviews: 34 },
   { id: 6, name: "Rasam Podi", price: 65, originalPrice: 75, image: "/B2/rasampodi.jpeg", category: "masala", rating: 4.8, reviews: 145 },
   
   // Mix
-  { id: 7, name: "Karuppu Kavuni Kanji", price: 149, originalPrice: 199, image: "/B2/karupukanunikanjimix.jpeg", category: "mix", rating: 5.0, reviews: 200, badge: "Healthy" },
+  { id: 7, name: "Karupu Kavuni Kanji Mix", price: 149, originalPrice: 199, image: "/B2/karupukanunikanjimix.jpeg", category: "mix", rating: 5.0, reviews: 200, badge: "Healthy" },
   
   // Masala
   { id: 8, name: "Mutton Masala", price: 69, originalPrice: 99, image: "/B2/muttonmasala.jpeg", category: "masala", rating: 4.8, reviews: 88 },
   { id: 9, name: "Sambar Masala", price: 49, originalPrice: 69, image: "/B2/sambarpodi.jpeg", category: "masala", rating: 4.7, reviews: 92 },
   { id: 10, name: "Chicken Masala", price: 59, originalPrice: 69, image: "/B2/chickenmasala.jpeg", category: "masala", rating: 4.9, reviews: 150, badge: "Popular" },
   { id: 11, name: "Biriyani Masala", price: 75, originalPrice: 85, image: "/B2/biriyanimasala.jpeg", category: "masala", rating: 4.9, reviews: 210 },
-  { id: 12, name: "Kari Masala", price: 69, originalPrice: 99, image: "/B2/karimasala.jpeg", category: "masala", rating: 4.6, reviews: 45 },
-  { id: 13, name: "Curry Leaves Podi", price: 69, originalPrice: 99, image: "/B2/curryleavespodi.jpeg", category: "podi", rating: 4.6, reviews: 45 },
+  { id: 12, name: "Curry Masala", price: 69, originalPrice: 99, image: "/B2/karimasala.jpeg", category: "masala", rating: 4.6, reviews: 45 },
+  { id: 13, name: "Curry Leaf Rice Podi", price: 69, originalPrice: 99, image: "/B2/curryleavespodi.jpeg", category: "podi", rating: 4.6, reviews: 45 },
  
-  { id: 14, name: "Kolu Podi", price: 69, originalPrice: 99, image: "/B2/kolupodi.jpeg", category: "podi", rating: 4.6, reviews: 45 },
+  { id: 14, name: "Horsegram Podi", price: 69, originalPrice: 99, image: "/B2/kolupodi.jpeg", category: "podi", rating: 4.6, reviews: 45 },
   { id: 15, name: "Peanut Rice Podi", price: 59, originalPrice: 89, image: "/B2/peanutricepodi.jpeg", category: "podi", rating: 4.6, reviews: 45 },
-  { id: 16, name: "Moringa Soup", price: 69, originalPrice: 99, image: "/B2/moringasoup.jpeg", category: "soup", rating: 4.6, reviews: 45,badge: "Healthy" },
+  { id: 16, name: "Moringa Leaf Soup Podi", price: 69, originalPrice: 99, image: "/B2/moringasoup.jpeg", category: "soup", rating: 4.6, reviews: 45,badge: "Healthy" },
 
 ];
 
