@@ -93,13 +93,6 @@ export const navLinks = [
 ];
 
 export const footerLinks = {
-  shop: [
-    { name: "All Products", href: "/#" },
-    { name: "Fresh Fruits", href: "/#" },
-    { name: "Vegetables", href: "/#" },
-    { name: "Dairy & Eggs", href: "/#" },
-    { name: "Bakery", href: "/#" },
-  ],
   company: [
     { name: "About Us", href: "/#" },
     { name: "Our Story", href: "/#" },

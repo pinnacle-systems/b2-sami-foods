@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Leaf, Facebook, Twitter, Instagram, Youtube, Mail } from "lucide-react";
-import { footerLinks } from "@/lib/data";
+import { footerLinks, categories } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
@@ -83,13 +83,21 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-6">Shop</h4>
             <ul className="space-y-4">
-              {footerLinks.shop.map((link) => (
-                <li key={link.name}>
+              <li>
+                <Link
+                  href="/shop"
+                  className="text-white/70 hover:text-primary transition-colors"
+                >
+                  All Products
+                </Link>
+              </li>
+              {categories.map((category) => (
+                <li key={category.id}>
                   <Link
-                    href={link.href}
+                    href={`/shop/${category.name.toLowerCase().replace(" ", "-")}`}
                     className="text-white/70 hover:text-primary transition-colors"
                   >
-                    {link.name}
+                    {category.name}
                   </Link>
                 </li>
               ))}
