@@ -13,6 +13,9 @@ next.user-config.*
 
 # Common ignores
 node_modules/
-.next/
+client/node_modules/
+client/dist/
 .DS_Store
-/lib/generated/prisma
+/src/generated/
+client/.env
+client/.env.local

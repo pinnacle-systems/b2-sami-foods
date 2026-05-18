@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(xargs rm *)",
+      "Bash(curl -s http://localhost:5175)",
+      "Bash(pnpm --version)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm run *)",
+      "Bash(node server.js)",
+      "Bash(curl -s http://localhost:5000)",
+      "Bash(curl -s http://localhost:5000/api/auth/me)",
+      "Bash(taskkill /F /IM node.exe)",
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue)"
+    ]
+  }
+}
