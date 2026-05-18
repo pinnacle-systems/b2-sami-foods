@@ -1,0 +1,7 @@
+export const AUTH_API             = "/auth"
+export const PRODUCT_CATEGORY_API = "/product-categories"
+export const PRODUCT_API          = "/products"
+export const CATEGORY_API         = "/categories"
+export const CART_API             = "/cart"
+export const WISHLIST_API         = "/wishlist"
+export const ORDER_API            = "/orders"
