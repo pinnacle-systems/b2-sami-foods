@@ -12,6 +12,29 @@ model User {
   email     String    @unique
   password  String
   mobile    String?
+  role      String    @default("user")
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model ProductCategory {
+  id                   Int             @id @default(autoincrement())
+  name                 String
+  description          String?
+  productCategoryImage String?
+  productMaster        ProductMaster[]
+}
+
+model ProductMaster {
+  id                Int             @id @default(autoincrement())
+  productName       String
+  productImage      String?
+  productcategory   ProductCategory @relation(fields: [productCategoryId], references: [id])
+  productCategoryId Int
+  productLabel      String?
+  productDesc       String?
+  productPrice      Decimal         @default(0)
+  originalPrice     Decimal         @default(0)
+  discountPrice     Decimal         @default(0)
+  productStatus     Boolean         @default(true)
 }

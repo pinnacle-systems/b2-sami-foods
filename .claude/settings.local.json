@@ -13,7 +13,13 @@
       "Bash(curl -s http://localhost:5000)",
       "Bash(curl -s http://localhost:5000/api/auth/me)",
       "Bash(taskkill /F /IM node.exe)",
-      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue)"
+      "PowerShell(Stop-Process -Name node -Force -ErrorAction SilentlyContinue)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm prisma *)",
+      "Bash(psql \"postgresql://postgres:pinnacle@localhost:5432/samifoods\" -c \"SELECT id, name, email, role FROM \\\\\"User\\\\\";\")",
+      "Bash(psql \"postgresql://postgres:pinnacle@localhost:5432/samifoods\" -c \"UPDATE \\\\\"User\\\\\" SET role = 'admin' WHERE email = 'karthickcs@gmail.com' RETURNING id, name, email, role;\")",
+      "Bash(pnpm prisma:seed)",
+      "Bash(pnpm prisma:generate)"
     ]
   }
 }
