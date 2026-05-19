@@ -8,7 +8,7 @@ const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
   }),
-  tagTypes: ["Auth", "User"],
+  tagTypes: ["Auth", "User", "Addresses"],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (payload) => ({
@@ -43,6 +43,53 @@ const authApi = createApi({
       }),
       providesTags: ["User"],
     }),
+    updateProfile: builder.mutation({
+      query: (payload) => ({
+        url: `${AUTH_API}/me`,
+        method: "PUT",
+        body: payload,
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      invalidatesTags: ["User"],
+    }),
+    createAddress: builder.mutation({
+      query: (payload) => ({
+        url: `${AUTH_API}/addresses`,
+        method: "POST",
+        body: payload,
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      invalidatesTags: ["User", "Addresses"],
+    }),
+    updateAddress: builder.mutation({
+      query: ({ id, ...payload }) => ({
+        url: `${AUTH_API}/addresses/${id}`,
+        method: "PUT",
+        body: payload,
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      invalidatesTags: ["User", "Addresses"],
+    }),
+    deleteAddress: builder.mutation({
+      query: (id) => ({
+        url: `${AUTH_API}/addresses/${id}`,
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      invalidatesTags: ["User", "Addresses"],
+    }),
   }),
 })
 
@@ -51,6 +98,10 @@ export const {
   useRegisterMutation,
   useGetMeQuery,
   useLazyGetMeQuery,
+  useUpdateProfileMutation,
+  useCreateAddressMutation,
+  useUpdateAddressMutation,
+  useDeleteAddressMutation,
 } = authApi
 
 export default authApi

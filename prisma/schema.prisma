@@ -7,14 +7,31 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String?
-  email     String    @unique
+  email     String      @unique
   password  String
   mobile    String?
-  role      String    @default("user")
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  role      String      @default("user")
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
+  lastName  String?
+  Addresses Addresses[]
+}
+
+model Addresses {
+  id              Int     @id @default(autoincrement())
+  name            String?
+  mobile          String?
+  alterNateMobile String?
+  pinCode         String?
+  city            String?
+  state           String?
+  address         String?
+  landMark        String?
+  addressType     String?
+  userId          Int?
+  user            User?   @relation(fields: [userId], references: [id])
 }
 
 model ProductCategory {
@@ -33,8 +50,9 @@ model ProductMaster {
   productCategoryId Int
   productLabel      String?
   productDesc       String?
-  productPrice      Decimal         @default(0)
-  originalPrice     Decimal         @default(0)
-  discountPrice     Decimal         @default(0)
+  originalPrice     Float
+  discountPrice     Float?
+  productPrice      Float?
+  ratings           Int?
   productStatus     Boolean         @default(true)
 }

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import Swal from "sweetalert2";
 import {
   Tag,
   Plus,
@@ -25,7 +26,6 @@ import {
 const EMPTY_FORM = {
   name: "",
   description: "",
-  image: "",
   productCategoryImage: "",
 };
 
@@ -48,7 +48,11 @@ function ImageUpload({ label, value, onChange }) {
       return URL.createObjectURL(value);
     }
     if (typeof value === "string") {
-      if (value.startsWith("data:") || value.startsWith("http:") || value.startsWith("https:")) {
+      if (
+        value.startsWith("data:") ||
+        value.startsWith("http:") ||
+        value.startsWith("https:")
+      ) {
         return value;
       }
       return `/${value}`; // resolves through Vite proxy
@@ -149,7 +153,6 @@ export default function ProductCategoryMaster() {
     setForm({
       name: row.name,
       description: row.description || "",
-      image: row.image || "",
       productCategoryImage: row.productCategoryImage || "",
     });
     setErrors({});
@@ -182,12 +185,6 @@ export default function ProductCategoryMaster() {
     formData.append("name", form.name.trim());
     formData.append("description", (form.description || "").trim());
 
-    if (form.image instanceof File) {
-      formData.append("image", form.image);
-    } else {
-      formData.append("image", form.image || "");
-    }
-
     if (form.productCategoryImage instanceof File) {
       formData.append("productCategoryImage", form.productCategoryImage);
     } else {
@@ -197,26 +194,58 @@ export default function ProductCategoryMaster() {
     try {
       if (editId !== null) {
         await updateCategory({ id: editId, body: formData }).unwrap();
+        Swal.fire({
+          icon: "success",
+          title: "Updated Successfully",
+          text: `Category "${form.name}" has been updated successfully.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
       } else {
         await createCategory(formData).unwrap();
+        Swal.fire({
+          icon: "success",
+          title: "Created Successfully",
+          text: `Category "${form.name}" has been created successfully.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
         setPage(1);
       }
       closeForm();
     } catch (err) {
+      const actionText = editId !== null ? "update" : "create";
       setApiError(
         err?.data?.message || "Something went wrong. Please try again.",
       );
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Save",
+        text: err?.data?.message || `Failed to ${actionText} category.`,
+      });
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteCategory(deleteId).unwrap();
+      Swal.fire({
+        icon: "success",
+        title: "Deleted Successfully",
+        text: "Category has been deleted successfully.",
+        timer: 2000,
+        showConfirmButton: false,
+      });
       setDeleteId(null);
       if (paged.length === 1 && page > 1) setPage((p) => p - 1);
     } catch (err) {
       setDeleteId(null);
       setApiError(err?.data?.message || "Failed to delete category.");
+      Swal.fire({
+        icon: "error",
+        title: "Failed to Delete",
+        text: err?.data?.message || "Failed to delete category.",
+      });
     }
   };
 
@@ -311,54 +340,54 @@ export default function ProductCategoryMaster() {
           </div>
 
           <form onSubmit={handleSubmit} className="pcm-form" noValidate>
-            {/* Name */}
-            <div className="pcm-field">
-              <label htmlFor="pcm-name" className="pcm-label">
-                Category Name <span className="pcm-required">*</span>
-              </label>
-              <input
-                id="pcm-name"
-                name="name"
-                className={`pcm-input ${errors.name ? "pcm-input-err" : ""}`}
-                placeholder="e.g. Spices & Masalas"
-                value={form.name}
-                onChange={handleChange}
-              />
-              {errors.name && (
-                <span className="pcm-err-msg">{errors.name}</span>
-              )}
-            </div>
+            <div className="pcm-form-grid">
+              {/* Left Column: Name & Description */}
+              <div className="pcm-form-col">
+                {/* Name */}
+                <div className="pcm-field ">
+                  <label htmlFor="pcm-name" className="pcm-label">
+                    Category Name <span className="pcm-required">*</span>
+                  </label>
+                  <input
+                    id="pcm-name"
+                    name="name"
+                    className={`w-80 pcm-input ${errors.name ? "pcm-input-err" : ""}`}
+                    placeholder="e.g. Spices & Masalas"
+                    value={form.name}
+                    onChange={handleChange}
+                  />
+                  {errors.name && (
+                    <span className="pcm-err-msg">{errors.name}</span>
+                  )}
+                </div>
 
-            {/* Description */}
-            <div className="pcm-field">
-              <label htmlFor="pcm-desc" className="pcm-label">
-                Description
-              </label>
-              <textarea
-                id="pcm-desc"
-                name="description"
-                rows={3}
-                className="pcm-input pcm-textarea"
-                placeholder="Brief description of this category…"
-                value={form.description}
-                onChange={handleChange}
-              />
-            </div>
+                {/* Description */}
+                <div className="pcm-field">
+                  <label htmlFor="pcm-desc" className="pcm-label">
+                    Description
+                  </label>
+                  <textarea
+                    id="pcm-desc"
+                    name="description"
+                    rows={4}
+                    className="pcm-input pcm-textarea"
+                    placeholder="Brief description of this category…"
+                    value={form.description}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
 
-            {/* Images row */}
-            <div className="pcm-img-row">
-              {/* <ImageUpload
-                label="Category Image"
-                value={form.image}
-                onChange={(v) => setForm((p) => ({ ...p, image: v }))}
-              /> */}
-              <ImageUpload
-                label="Banner / Cover Image"
-                value={form.productCategoryImage}
-                onChange={(v) =>
-                  setForm((p) => ({ ...p, productCategoryImage: v }))
-                }
-              />
+              {/* Right Column: Banner / Cover Image */}
+              <div className="pcm-form-col">
+                <ImageUpload
+                  label="Banner / Cover Image"
+                  value={form.productCategoryImage}
+                  onChange={(v) =>
+                    setForm((p) => ({ ...p, productCategoryImage: v }))
+                  }
+                />
+              </div>
             </div>
 
             {/* Actions */}
@@ -407,7 +436,7 @@ export default function ProductCategoryMaster() {
       )}
 
       {/* ── Table ── */}
-      <div className="pcm-table-wrap">
+      <div className="pcm-table-wrap ">
         {paged.length === 0 ? (
           <div className="pcm-empty">
             <Tag size={40} className="pcm-empty-icon" />
@@ -423,28 +452,35 @@ export default function ProductCategoryMaster() {
             )}
           </div>
         ) : (
-          <table className="pcm-table">
+          <table className="pcm-table w-[55vw] rounded-lg bg-transparent table-fixed overflow-x-auto">
             <thead>
               <tr>
-                <th className="pcm-th pcm-th-num">#</th>
-                <th className="pcm-th">Image</th>
-                <th className="pcm-th">Category Name</th>
-                <th className="pcm-th pcm-th-desc">Description</th>
-                <th className="pcm-th pcm-th-actions">Actions</th>
+                <th className="pcm-th pcm-th-num w-6">#</th>
+                <th className="pcm-th w-20">Image</th>
+                <th className="pcm-th w-32">Category Name</th>
+                <th className="pcm-th pcm-th-desc w-64">Description</th>
+                <th className="pcm-th pcm-th-actions w-24">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {paged.map((row, idx) => (
+              {paged?.map((row, idx) => (
                 <tr key={row.id} className="pcm-tr">
-                  <td className="pcm-td pcm-td-num">
+                  <td className="pcm-td pcm-td-num border-r border-gray-300">
                     {(page - 1) * PAGE_SIZE + idx + 1}
                   </td>
-                  <td className="pcm-td">
-                    {(row.productCategoryImage || row.image) ? (
+                  <td className="pcm-td border-r text-center border-gray-300">
+                    {row?.productCategoryImage || row?.image ? (
                       <img
-                        src={(row.productCategoryImage || row.image).startsWith('http') || (row.productCategoryImage || row.image).startsWith('data:') 
-                          ? (row.productCategoryImage || row.image) 
-                          : `/${row.productCategoryImage || row.image}`}
+                        src={
+                          (row?.productCategoryImage || row?.image).startsWith(
+                            "http",
+                          ) ||
+                          (row?.productCategoryImage || row?.image).startsWith(
+                            "data:",
+                          )
+                            ? row?.productCategoryImage || row?.image
+                            : `/${row?.productCategoryImage || row?.image}`
+                        }
                         alt={row.name}
                         className="pcm-table-img"
                       />
@@ -454,11 +490,13 @@ export default function ProductCategoryMaster() {
                       </div>
                     )}
                   </td>
-                  <td className="pcm-td pcm-td-name">{row.name}</td>
-                  <td className="pcm-td pcm-td-desc">
-                    {row.description || <span className="pcm-no-data">—</span>}
+                  <td className="pcm-td pcm-td-name border-r border-gray-300">
+                    {row?.name}
                   </td>
-                  <td className="pcm-td pcm-td-actions">
+                  <td className="pcm-td pcm-td-desc border-r border-gray-300">
+                    {row?.description || <span className="pcm-no-data">—</span>}
+                  </td>
+                  <td className="pcm-td pcm-td-actions flex justify-center">
                     <button
                       className="pcm-action-btn pcm-edit-btn"
                       onClick={() => openEdit(row)}

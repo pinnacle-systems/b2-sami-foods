@@ -60,8 +60,16 @@ export const loginUser = async ({ email, password }) => {
 
 export const getUserById = async (id) => {
   const user = await prisma.user.findUnique({
-    where: { id },
-    select: { id: true, name: true, email: true, mobile: true, role: true, createdAt: true },
+    where: { id: Number(id) },
+    select: { 
+      id: true, 
+      name: true, 
+      email: true, 
+      mobile: true, 
+      role: true, 
+      createdAt: true,
+      Addresses: true 
+    },
   })
 
   if (!user) {
@@ -71,4 +79,119 @@ export const getUserById = async (id) => {
   }
 
   return user
+}
+
+export const updateUser = async (id, { name, email, password, mobile }) => {
+  if (!name || !name.trim()) {
+    const err = new Error('Name is required')
+    err.status = 400
+    throw err
+  }
+  if (!email || !email.trim()) {
+    const err = new Error('Email is required')
+    err.status = 400
+    throw err
+  }
+
+  const exists = await prisma.user.findFirst({
+    where: {
+      email: email.trim(),
+      NOT: { id: Number(id) }
+    }
+  })
+  if (exists) {
+    const err = new Error('Email is already registered by another user')
+    err.status = 409
+    throw err
+  }
+
+  const existingUser = await prisma.user.findUnique({ where: { id: Number(id) } })
+  if (!existingUser) {
+    const err = new Error('User not found')
+    err.status = 404
+    throw err
+  }
+
+  const updateData = {
+    name: name.trim(),
+    email: email.trim(),
+    mobile: mobile || null,
+  }
+
+  if (password && password.trim()) {
+    updateData.password = await bcrypt.hash(password.trim(), 10)
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: Number(id) },
+    data: updateData
+  })
+
+  return safeUser(updatedUser)
+}
+
+export const createAddress = async (userId, data) => {
+  return prisma.addresses.create({
+    data: {
+      name: data.name,
+      mobile: data.mobile,
+      alterNateMobile: data.alterNateMobile || null,
+      pinCode: data.pinCode,
+      city: data.city,
+      state: data.state,
+      address: data.address,
+      landMark: data.landMark || null,
+      addressType: data.addressType || "Home",
+      userId: Number(userId)
+    }
+  })
+}
+
+export const getAddressesByUserId = async (userId) => {
+  return prisma.addresses.findMany({
+    where: { userId: Number(userId) }
+  })
+}
+
+export const updateAddress = async (addressId, userId, data) => {
+  const address = await prisma.addresses.findUnique({
+    where: { id: Number(addressId) }
+  })
+
+  if (!address || address.userId !== Number(userId)) {
+    const err = new Error('Address not found or unauthorized')
+    err.status = 404
+    throw err
+  }
+
+  return prisma.addresses.update({
+    where: { id: Number(addressId) },
+    data: {
+      name: data.name,
+      mobile: data.mobile,
+      alterNateMobile: data.alterNateMobile || null,
+      pinCode: data.pinCode,
+      city: data.city,
+      state: data.state,
+      address: data.address,
+      landMark: data.landMark || null,
+      addressType: data.addressType || "Home",
+    }
+  })
+}
+
+export const deleteAddress = async (addressId, userId) => {
+  const address = await prisma.addresses.findUnique({
+    where: { id: Number(addressId) }
+  })
+
+  if (!address || address.userId !== Number(userId)) {
+    const err = new Error('Address not found or unauthorized')
+    err.status = 404
+    throw err
+  }
+
+  return prisma.addresses.delete({
+    where: { id: Number(addressId) }
+  })
 }
