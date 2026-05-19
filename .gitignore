@@ -20,3 +20,4 @@ client/dist/
 /src/generated/
 client/.env
 client/.env.local
+uploads/

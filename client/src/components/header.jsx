@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Heart, User, LogIn, LogOut } from "lucide-react";
+import { ShoppingCart, Menu, X, Heart, User, LogIn, LogOut, ShoppingBag } from "lucide-react";
 import { navLinks } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/components/cart-provider";
@@ -72,8 +72,8 @@ export function Header() {
             {/* Auth section – desktop */}
             <div className="hidden md:flex items-center gap-2">
               {isAuthenticated && user ? (
-                <>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border">
+                <div className="relative group">
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted border border-border cursor-pointer transition-colors hover:bg-muted/80">
                     <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
                       <span className="text-primary-foreground text-xs font-bold uppercase">
                         {user.name?.charAt(0)}
@@ -81,11 +81,23 @@ export function Header() {
                     </div>
                     <span className="text-sm font-medium text-foreground">{user.name}</span>
                   </div>
-                  <Button variant="outline" onClick={handleLogout}
-                    className="rounded-full px-4 border-border flex items-center gap-2 text-sm">
-                    <LogOut size={15} /> Logout
-                  </Button>
-                </>
+
+                  {/* Hover Dropdown Menu */}
+                  <div className="absolute right-0 top-full pt-2 w-40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-card border border-border rounded-xl shadow-lg overflow-hidden py-1">
+                      <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors font-medium">
+                        <User size={14} className="opacity-80" /> Profile
+                      </Link>
+                      <Link to="/orders" className="flex items-center gap-2 px-4 py-2 text-sm text-foreground hover:bg-muted hover:text-primary transition-colors font-medium">
+                        <ShoppingBag size={14} className="opacity-80" /> Orders
+                      </Link>
+                      <div className="border-t border-border my-1"></div>
+                      <button onClick={handleLogout} className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors font-medium">
+                        <LogOut size={14} /> Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <>
                   <Button variant="outline" onClick={openLogin}
@@ -132,8 +144,16 @@ export function Header() {
                     </div>
                     <span className="text-sm font-semibold text-foreground">{user.name}</span>
                   </div>
+
+                  <Link to="/profile" className="px-4 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors font-medium flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                    <User size={14} /> Profile
+                  </Link>
+                  <Link to="/orders" className="px-4 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors font-medium flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                    <ShoppingBag size={14} /> Orders
+                  </Link>
+
                   <Button variant="outline" onClick={handleLogout}
-                    className="w-full rounded-full flex items-center gap-2">
+                    className="w-full rounded-full flex items-center gap-2 mt-1">
                     <LogOut size={15} /> Logout
                   </Button>
                 </>

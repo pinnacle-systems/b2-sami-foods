@@ -1,7 +1,11 @@
-import { categories } from "@/lib/data";
+import { useGetProductCategoriesQuery } from "@/redux/services/productCategoryApi";
 import { CategoryCard } from "./category-card";
+
 export function Categories() {
-    return (<section className="py-20 bg-background">
+  const { data: categories = [], isLoading, isError } = useGetProductCategoriesQuery();
+
+  return (
+    <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-12">
@@ -17,10 +21,31 @@ export function Categories() {
           </p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => (<CategoryCard key={category.id} {...category}/>))}
-        </div>
+        {/* Loading skeletons */}
+        {isLoading && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-48 rounded-3xl bg-muted animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
+        {isError && (
+          <p className="text-center text-muted-foreground py-12">
+            Failed to load categories. Please try again later.
+          </p>
+        )}
+
+        {/* Grid */}
+        {!isLoading && !isError && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
+          </div>
+        )}
       </div>
-    </section>);
+    </section>
+  );
 }
