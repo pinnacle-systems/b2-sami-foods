@@ -11,7 +11,7 @@ next.user-config.*
 # Environment variables
 
 .env
-
+uploads/
 # Common ignores
 node_modules/
 client/node_modules/
@@ -20,4 +20,3 @@ client/dist/
 /src/generated/
 client/.env
 client/.env.local
-uploads/
