@@ -1,80 +1,279 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { selectToken, selectIsAuthenticated } from "@/redux/features/authSlice";
+
 const CartContext = createContext(undefined);
-export function CartProvider({ children }) {
-    const [cart, setCart] = useState([]);
-    const [wishlist, setWishlist] = useState([]);
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => {
-        try {
-            const savedCart = localStorage.getItem("b2_cart");
-            const savedWishlist = localStorage.getItem("b2_wishlist");
-            if (savedCart)
-                setCart(JSON.parse(savedCart));
-            if (savedWishlist)
-                setWishlist(JSON.parse(savedWishlist));
-        }
-        catch (e) { }
-        setMounted(true);
-    }, []);
-    useEffect(() => {
-        if (mounted) {
-            localStorage.setItem("b2_cart", JSON.stringify(cart));
-            localStorage.setItem("b2_wishlist", JSON.stringify(wishlist));
-        }
-    }, [cart, wishlist, mounted]);
-    const addToCart = (product, quantity = 1) => {
-        setCart((prev) => {
-            const existing = prev.find((item) => item.product.id === product.id);
-            if (existing) {
-                return prev.map((item) => item.product.id === product.id
-                    ? { ...item, quantity: item.quantity + quantity }
-                    : item);
-            }
-            return [...prev, { product, quantity }];
-        });
-    };
-    const updateQuantity = (productId, quantity) => {
-        if (quantity <= 0) {
-            removeFromCart(productId);
-            return;
-        }
-        setCart((prev) => prev.map((item) => item.product.id === productId ? { ...item, quantity } : item));
-    };
-    const removeFromCart = (productId) => {
-        setCart((prev) => prev.filter((item) => item.product.id !== productId));
-    };
-    const toggleWishlist = (product) => {
-        setWishlist((prev) => {
-            const existing = prev.find((p) => p.id === product.id);
-            if (existing) {
-                return prev.filter((p) => p.id !== product.id);
-            }
-            return [...prev, product];
-        });
-    };
-    const isInWishlist = (productId) => {
-        return wishlist.some((p) => p.id === productId);
-    };
-    const cartTotal = cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
-    const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
-    return (<CartContext.Provider value={{
-            cart,
-            wishlist,
-            addToCart,
-            updateQuantity,
-            removeFromCart,
-            toggleWishlist,
-            isInWishlist,
-            cartTotal,
-            cartCount,
-        }}>
-      {children}
-    </CartContext.Provider>);
+const API_BASE = "/api";
+
+function normalizeProduct(p) {
+  const rawImage = p.productImage;
+  const image = rawImage
+    ? rawImage.startsWith("http") || rawImage.startsWith("/") || rawImage.startsWith("data:")
+      ? rawImage
+      : `/${rawImage}`
+    : null;
+  return {
+    ...p,
+    image,
+    name: p.productName,
+    price: p.productPrice ?? p.originalPrice ?? 0,
+  };
 }
-export const useCart = () => {
-    const context = useContext(CartContext);
-    if (!context) {
-        throw new Error("useCart must be used within a CartProvider");
+
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [mounted, setMounted] = useState(false);
+
+  const token = useSelector(selectToken);
+  const isAuth = useSelector(selectIsAuthenticated);
+  const prevAuthRef = useRef(isAuth);
+
+  const syncFromBackend = async (authToken) => {
+    try {
+      const headers = { Authorization: `Bearer ${authToken}` };
+      const [cartRes, wishlistRes] = await Promise.all([
+        fetch(`${API_BASE}/cart`, { headers }),
+        fetch(`${API_BASE}/wishlist`, { headers }),
+      ]);
+      if (cartRes.ok) {
+        const { data } = await cartRes.json();
+        setCart(
+          (data.items || []).map((item) => ({
+            product: normalizeProduct(item.product),
+            quantity: item.quantity,
+          }))
+        );
+      }
+      if (wishlistRes.ok) {
+        const { data } = await wishlistRes.json();
+        setWishlist((data || []).map((item) => normalizeProduct(item.product)));
+      }
+    } catch (e) {
+      console.error("Cart sync failed:", e);
     }
-    return context;
+  };
+
+  // Merge local cart items into backend on login, then pull fresh state
+  const mergeAndSync = async (authToken, localCart) => {
+    try {
+      const headers = { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` };
+      await Promise.all(
+        localCart.map((item) =>
+          fetch(`${API_BASE}/cart/items`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ productId: item.product.id, quantity: item.quantity }),
+          })
+        )
+      );
+    } catch (e) {
+      console.error("Cart merge failed:", e);
+    }
+    await syncFromBackend(authToken);
+  };
+
+  // Initial load
+  useEffect(() => {
+    const init = async () => {
+      if (isAuth && token) {
+        await syncFromBackend(token);
+      } else {
+        try {
+          const savedCart = localStorage.getItem("b2_cart");
+          const savedWishlist = localStorage.getItem("b2_wishlist");
+          if (savedCart) setCart(JSON.parse(savedCart));
+          if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+        } catch (e) {}
+      }
+      setMounted(true);
+    };
+    init();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // React to login / logout transitions
+  useEffect(() => {
+    if (!mounted) return;
+    const wasAuth = prevAuthRef.current;
+    prevAuthRef.current = isAuth;
+
+    if (isAuth && token && !wasAuth) {
+      // Just logged in — merge any local cart items, then pull backend data
+      mergeAndSync(token, cart);
+    } else if (!isAuth && wasAuth) {
+      // Just logged out — restore from localStorage
+      try {
+        const savedCart = localStorage.getItem("b2_cart");
+        const savedWishlist = localStorage.getItem("b2_wishlist");
+        setCart(savedCart ? JSON.parse(savedCart) : []);
+        setWishlist(savedWishlist ? JSON.parse(savedWishlist) : []);
+      } catch (e) {
+        setCart([]);
+        setWishlist([]);
+      }
+    }
+  }, [isAuth, token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist to localStorage when not authenticated
+  useEffect(() => {
+    if (mounted && !isAuth) {
+      localStorage.setItem("b2_cart", JSON.stringify(cart));
+      localStorage.setItem("b2_wishlist", JSON.stringify(wishlist));
+    }
+  }, [cart, wishlist, mounted, isAuth]);
+
+  const addToCart = async (product, quantity = 1) => {
+    // Optimistic update
+    setCart((prev) => {
+      const existing = prev.find((item) => item.product.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      }
+      return [...prev, { product: normalizeProduct(product), quantity }];
+    });
+
+    if (isAuth && token) {
+      try {
+        const res = await fetch(`${API_BASE}/cart/items`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ productId: product.id, quantity }),
+        });
+        if (res.ok) {
+          const { data } = await res.json();
+          setCart(
+            (data.items || []).map((item) => ({
+              product: normalizeProduct(item.product),
+              quantity: item.quantity,
+            }))
+          );
+        }
+      } catch (e) {
+        console.error("addToCart failed:", e);
+      }
+    }
+  };
+
+  const updateQuantity = async (productId, quantity) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    // Optimistic update
+    setCart((prev) =>
+      prev.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      )
+    );
+
+    if (isAuth && token) {
+      try {
+        const res = await fetch(`${API_BASE}/cart/items/${productId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ quantity }),
+        });
+        if (res.ok) {
+          const { data } = await res.json();
+          setCart(
+            (data.items || []).map((item) => ({
+              product: normalizeProduct(item.product),
+              quantity: item.quantity,
+            }))
+          );
+        }
+      } catch (e) {
+        console.error("updateQuantity failed:", e);
+      }
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    // Optimistic update
+    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+
+    if (isAuth && token) {
+      try {
+        const res = await fetch(`${API_BASE}/cart/items/${productId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const { data } = await res.json();
+          setCart(
+            (data.items || []).map((item) => ({
+              product: normalizeProduct(item.product),
+              quantity: item.quantity,
+            }))
+          );
+        }
+      } catch (e) {
+        console.error("removeFromCart failed:", e);
+      }
+    }
+  };
+
+  const toggleWishlist = async (product) => {
+    const normalized = normalizeProduct(product);
+    // Optimistic update
+    setWishlist((prev) => {
+      const exists = prev.find((p) => p.id === product.id);
+      return exists ? prev.filter((p) => p.id !== product.id) : [...prev, normalized];
+    });
+
+    if (isAuth && token) {
+      try {
+        await fetch(`${API_BASE}/wishlist/${product.id}`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const res = await fetch(`${API_BASE}/wishlist`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const { data } = await res.json();
+          setWishlist((data || []).map((item) => normalizeProduct(item.product)));
+        }
+      } catch (e) {
+        console.error("toggleWishlist failed:", e);
+      }
+    }
+  };
+
+  const isInWishlist = (productId) => wishlist.some((p) => p.id === productId);
+
+  const cartTotal = cart.reduce(
+    (total, item) => total + (item.product.price ?? 0) * item.quantity,
+    0
+  );
+  const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        wishlist,
+        addToCart,
+        updateQuantity,
+        removeFromCart,
+        toggleWishlist,
+        isInWishlist,
+        cartTotal,
+        cartCount,
+        syncFromBackend,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within a CartProvider");
+  return context;
 };

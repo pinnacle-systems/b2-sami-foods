@@ -6,12 +6,13 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Shop() {
-  const { data: products = [], isLoading: isProductsLoading } = useGetProductsQuery();
-  const { data: categories = [], isLoading: isCatsLoading } = useGetProductCategoriesQuery();
+  const { data: products = [], isLoading: isProductsLoading, isError: isProductsError } = useGetProductsQuery();
+  const { data: categories = [], isLoading: isCatsLoading, isError: isCatsError } = useGetProductCategoriesQuery();
 
   const isLoading = isProductsLoading || isCatsLoading;
+  const isError = isProductsError || isCatsError;
 
-  const activeProducts = products.filter((p) => p.productStatus);
+  const activeProducts = products.filter((p) => p.productStatus !== false);
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-background">
@@ -27,6 +28,14 @@ export default function Shop() {
             Browse our complete collection of natural, homemade organic products.
           </p>
         </div>
+
+        {/* Error state */}
+        {isError && !isLoading && (
+          <div className="text-center py-16">
+            <p className="text-destructive font-medium text-lg">Failed to load products.</p>
+            <p className="text-muted-foreground mt-1">Please check your connection and refresh the page.</p>
+          </div>
+        )}
 
         {/* Loading */}
         {isLoading && (
@@ -45,7 +54,7 @@ export default function Shop() {
         )}
 
         {/* Grouped by category */}
-        {!isLoading && (
+        {!isLoading && !isError && (
           <div className="space-y-16">
             {categories.map((category) => {
               const categoryProducts = activeProducts.filter(

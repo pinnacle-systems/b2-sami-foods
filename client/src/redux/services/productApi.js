@@ -19,8 +19,11 @@ const productApi = createApi({
     /* ── GET all ── */
     getProducts: builder.query({
       query: () => PRODUCT_API,
+      // Backend returns { products, total, page } — extract the array so all
+      // existing components continue to receive a plain array from `data`.
+      transformResponse: (response) => response?.products ?? response ?? [],
       providesTags: (result) =>
-        result
+        Array.isArray(result)
           ? [
               ...result.map(({ id }) => ({ type: "Product", id })),
               { type: "Product", id: "LIST" },

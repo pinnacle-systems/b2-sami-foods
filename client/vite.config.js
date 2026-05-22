@@ -36,6 +36,25 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Core React runtime — very rarely changes, stays cached
+            "vendor-react": ["react", "react-dom", "react-router-dom"],
+            // Redux + RTK Query
+            "vendor-redux": ["@reduxjs/toolkit", "react-redux"],
+            // All Radix / shadcn UI primitives
+            "vendor-ui": [
+              "@radix-ui/react-dialog",
+              "@radix-ui/react-dropdown-menu",
+              "@radix-ui/react-label",
+              "@radix-ui/react-select",
+              "@radix-ui/react-slot",
+              "@radix-ui/react-toast",
+            ],
+          },
+        },
+      },
     },
     server: {
       host: "0.0.0.0",
