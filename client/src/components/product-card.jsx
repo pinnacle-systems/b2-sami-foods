@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { ShoppingCart, Heart, Plus, Minus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/components/cart-provider";
 
 export function ProductCard({ product }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
   const { cart, addToCart, updateQuantity, toggleWishlist, isInWishlist } =
     useCart();
   const cartItem = cart.find((item) => item.product.id === product.id);
@@ -29,14 +31,19 @@ export function ProductCard({ product }) {
     <div className="group bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col border border-border w-full max-w-[220px] mx-auto">
       {/* Image */}
       <div className="relative h-44 bg-muted overflow-hidden">
-        {image ? (
+        {/* Skeleton shimmer shown until image loads */}
+        {(!image || !imgLoaded) && (
+          <div className="absolute inset-0 bg-muted animate-pulse" />
+        )}
+        {image && (
           <img
             src={image}
             alt={name}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setImgLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
           />
-        ) : (
-          <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-muted" />
         )}
 
         {/* Badge */}

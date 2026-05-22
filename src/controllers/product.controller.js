@@ -1,5 +1,6 @@
 import {
   getAllProducts,
+  getAllProductsAdmin,
   getProductById,
   createProduct,
   updateProduct,
@@ -8,7 +9,18 @@ import {
 
 export const getAll = async (req, res, next) => {
   try {
-    const data = await getAllProducts()
+    const { page = 1, limit = 100 } = req.query
+    const data = await getAllProducts({ page, limit })
+    res.json(data)
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const getAllAdmin = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 50 } = req.query
+    const data = await getAllProductsAdmin({ page, limit })
     res.json(data)
   } catch (err) {
     next(err)

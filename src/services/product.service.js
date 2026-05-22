@@ -1,11 +1,34 @@
 import prisma from "../config/db.js";
 
-/* ── Get all products ── */
-export const getAllProducts = async () => {
-  return prisma.productMaster.findMany({
-    orderBy: { id: "asc" },
-    include: { productcategory: true },
-  });
+/* ── Get all products (public — active only, paginated) ── */
+export const getAllProducts = async ({ page = 1, limit = 100 } = {}) => {
+  const skip = (Number(page) - 1) * Number(limit)
+  const [products, total] = await Promise.all([
+    prisma.productMaster.findMany({
+      where:   { productStatus: true },
+      orderBy: { id: 'asc' },
+      include: { productcategory: true },
+      skip,
+      take: Number(limit),
+    }),
+    prisma.productMaster.count({ where: { productStatus: true } }),
+  ])
+  return { products, total, page: Number(page), limit: Number(limit) }
+}
+
+/* ── Get all products for admin (all statuses, paginated) ── */
+export const getAllProductsAdmin = async ({ page = 1, limit = 50 } = {}) => {
+  const skip = (Number(page) - 1) * Number(limit)
+  const [products, total] = await Promise.all([
+    prisma.productMaster.findMany({
+      orderBy: { id: 'asc' },
+      include: { productcategory: true },
+      skip,
+      take: Number(limit),
+    }),
+    prisma.productMaster.count(),
+  ])
+  return { products, total, page: Number(page), limit: Number(limit) }
 };
 
 /* ── Get single product ── */
