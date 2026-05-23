@@ -50,24 +50,43 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <Link to="/wishlist"
-              className="relative p-2 hover:bg-muted rounded-full transition-colors hidden sm:flex">
+            <button
+              onClick={() => {
+                if (isAuthenticated) {
+                  navigate("/wishlist");
+                } else {
+                  openLogin();
+                }
+              }}
+              className="relative p-2 hover:bg-muted rounded-full transition-colors hidden sm:flex"
+              aria-label="Wishlist"
+            >
               <Heart className="w-6 h-6 text-foreground" />
               {wishlist.length > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
                   {wishlist.length}
                 </span>
               )}
-            </Link>
+            </button>
 
-            <Link to="/cart" className="relative p-2 hover:bg-muted rounded-full transition-colors">
+            <button
+              onClick={() => {
+                if (isAuthenticated) {
+                  navigate("/cart");
+                } else {
+                  openLogin();
+                }
+              }}
+              className="relative p-2 hover:bg-muted rounded-full transition-colors"
+              aria-label="Cart"
+            >
               <ShoppingCart className="w-6 h-6 text-foreground" />
               {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {/* Auth section – desktop */}
             <div className="hidden md:flex items-center gap-2">

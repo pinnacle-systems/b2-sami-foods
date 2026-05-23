@@ -31,6 +31,19 @@ const productApi = createApi({
           : [{ type: "Product", id: "LIST" }],
     }),
 
+    /* ── GET all admin (including inactive) ── */
+    getAdminProducts: builder.query({
+      query: () => `${PRODUCT_API}/admin/all`,
+      transformResponse: (response) => response?.products ?? response ?? [],
+      providesTags: (result) =>
+        Array.isArray(result)
+          ? [
+              ...result.map(({ id }) => ({ type: "Product", id })),
+              { type: "Product", id: "LIST" },
+            ]
+          : [{ type: "Product", id: "LIST" }],
+    }),
+
     /* ── GET single ── */
     getProductById: builder.query({
       query: (id) => `${PRODUCT_API}/${id}`,
@@ -76,6 +89,7 @@ const productApi = createApi({
 
 export const {
   useGetProductsQuery,
+  useGetAdminProductsQuery,
   useGetProductByIdQuery,
   useCreateProductMutation,
   useUpdateProductMutation,

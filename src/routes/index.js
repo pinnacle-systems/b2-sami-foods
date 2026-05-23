@@ -4,6 +4,7 @@ import productCategoryRoutes from './productCategory.routes.js'
 import productRoutes from './product.routes.js'
 import cartRoutes from './cart.routes.js'
 import wishlistRoutes from './wishlist.routes.js'
+import uomRoutes from './uom.routes.js'
 
 const router = Router()
 
@@ -12,5 +13,6 @@ router.use('/product-categories', productCategoryRoutes)
 router.use('/products',           productRoutes)
 router.use('/cart',               cartRoutes)
 router.use('/wishlist',           wishlistRoutes)
+router.use('/uoms',               uomRoutes)
 
 export default router

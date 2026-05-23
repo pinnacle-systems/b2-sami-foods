@@ -1,9 +1,24 @@
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@/components/cart-provider';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { selectIsAuthenticated } from '@/redux/features/authSlice';
+import { useAuthModal } from '@/components/auth-modal-provider';
+
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const { openLogin } = useAuthModal();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+      openLogin();
+    }
+  }, [isAuthenticated, navigate, openLogin]);
   return (<div className="min-h-screen pt-24 pb-12 bg-background">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">

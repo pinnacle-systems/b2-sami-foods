@@ -47,6 +47,13 @@ export const create = async (req, res, next) => {
     if (payload.productStatus !== undefined) {
       payload.productStatus = payload.productStatus === 'true'
     }
+    if (payload.priceRanges) {
+      try {
+        payload.priceRanges = JSON.parse(payload.priceRanges)
+      } catch (e) {
+        payload.priceRanges = []
+      }
+    }
     const data = await createProduct(payload)
     res.status(201).json(data)
   } catch (err) {
@@ -62,6 +69,13 @@ export const update = async (req, res, next) => {
     }
     if (payload.productStatus !== undefined) {
       payload.productStatus = payload.productStatus === 'true'
+    }
+    if (payload.priceRanges) {
+      try {
+        payload.priceRanges = JSON.parse(payload.priceRanges)
+      } catch (e) {
+        payload.priceRanges = []
+      }
     }
     const data = await updateProduct(req.params.id, payload)
     res.json(data)
