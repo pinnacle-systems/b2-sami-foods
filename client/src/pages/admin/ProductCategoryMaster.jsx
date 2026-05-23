@@ -35,7 +35,7 @@ function validate(form) {
   return errs;
 }
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 /* ── ImageUpload component ── */
 function ImageUpload({ label, value, onChange }) {
@@ -329,109 +329,111 @@ export default function ProductCategoryMaster() {
 
       {/* ── Add / Edit Form Panel ── */}
       {showForm && (
-        <div className="pcm-form-panel">
-          <div className="pcm-form-panel-header">
-            <span className="pcm-form-panel-title">
-              {editId !== null ? "Edit Category" : "Add New Category"}
-            </span>
-            <button className="pcm-form-close" onClick={closeForm}>
-              <X size={16} />
-            </button>
-          </div>
+        <div className="pcm-modal-overlay">
+          <div className="pcm-form-panel max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="pcm-form-panel-header">
+              <span className="pcm-form-panel-title">
+                {editId !== null ? "Edit Category" : "Add New Category"}
+              </span>
+              <button className="pcm-form-close" onClick={closeForm}>
+                <X size={16} />
+              </button>
+            </div>
 
-          <form onSubmit={handleSubmit} className="pcm-form" noValidate>
-            <div className="pcm-form-grid">
-              {/* Left Column: Name & Description */}
-              <div className="pcm-form-col">
-                {/* Name */}
-                <div className="pcm-field ">
-                  <label htmlFor="pcm-name" className="pcm-label">
-                    Category Name <span className="pcm-required">*</span>
-                  </label>
-                  <input
-                    id="pcm-name"
-                    name="name"
-                    className={`w-80 pcm-input ${errors.name ? "pcm-input-err" : ""}`}
-                    placeholder="e.g. Spices & Masalas"
-                    value={form.name}
-                    onChange={handleChange}
+            <form onSubmit={handleSubmit} className="pcm-form" noValidate>
+              <div className="pcm-form-grid">
+                {/* Left Column: Name & Description */}
+                <div className="pcm-form-col">
+                  {/* Name */}
+                  <div className="pcm-field ">
+                    <label htmlFor="pcm-name" className="pcm-label">
+                      Category Name <span className="pcm-required">*</span>
+                    </label>
+                    <input
+                      id="pcm-name"
+                      name="name"
+                      className={`w-80 pcm-input ${errors.name ? "pcm-input-err" : ""}`}
+                      placeholder="e.g. Spices & Masalas"
+                      value={form.name}
+                      onChange={handleChange}
+                    />
+                    {errors.name && (
+                      <span className="pcm-err-msg">{errors.name}</span>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <div className="pcm-field">
+                    <label htmlFor="pcm-desc" className="pcm-label">
+                      Description
+                    </label>
+                    <textarea
+                      id="pcm-desc"
+                      name="description"
+                      rows={4}
+                      className="pcm-input pcm-textarea"
+                      placeholder="Brief description of this category…"
+                      value={form.description}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column: Banner / Cover Image */}
+                <div className="pcm-form-col">
+                  <ImageUpload
+                    label="Banner / Cover Image"
+                    value={form.productCategoryImage}
+                    onChange={(v) =>
+                      setForm((p) => ({ ...p, productCategoryImage: v }))
+                    }
                   />
-                  {errors.name && (
-                    <span className="pcm-err-msg">{errors.name}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="pcm-form-actions">
+                <button
+                  type="button"
+                  className="pcm-btn-cancel"
+                  onClick={closeForm}
+                  disabled={isSaving}
+                >
+                  <X size={14} /> Cancel
+                </button>
+                <button
+                  type="button"
+                  className="pcm-btn-reset"
+                  onClick={() => {
+                    setForm(EMPTY_FORM);
+                    setErrors({});
+                    setApiError("");
+                  }}
+                  disabled={isSaving}
+                >
+                  <RefreshCw size={14} /> Reset
+                </button>
+                <button
+                  type="submit"
+                  className="pcm-btn-save"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <Loader2 size={14} className="pcm-btn-spinner" />
+                  ) : (
+                    <Save size={14} />
                   )}
-                </div>
-
-                {/* Description */}
-                <div className="pcm-field">
-                  <label htmlFor="pcm-desc" className="pcm-label">
-                    Description
-                  </label>
-                  <textarea
-                    id="pcm-desc"
-                    name="description"
-                    rows={4}
-                    className="pcm-input pcm-textarea"
-                    placeholder="Brief description of this category…"
-                    value={form.description}
-                    onChange={handleChange}
-                  />
-                </div>
+                  {isSaving
+                    ? editId !== null
+                      ? "Updating…"
+                      : "Saving…"
+                    : editId !== null
+                      ? "Update"
+                      : "Save Category"}
+                </button>
               </div>
-
-              {/* Right Column: Banner / Cover Image */}
-              <div className="pcm-form-col">
-                <ImageUpload
-                  label="Banner / Cover Image"
-                  value={form.productCategoryImage}
-                  onChange={(v) =>
-                    setForm((p) => ({ ...p, productCategoryImage: v }))
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="pcm-form-actions">
-              <button
-                type="button"
-                className="pcm-btn-cancel"
-                onClick={closeForm}
-                disabled={isSaving}
-              >
-                <X size={14} /> Cancel
-              </button>
-              <button
-                type="button"
-                className="pcm-btn-reset"
-                onClick={() => {
-                  setForm(EMPTY_FORM);
-                  setErrors({});
-                  setApiError("");
-                }}
-                disabled={isSaving}
-              >
-                <RefreshCw size={14} /> Reset
-              </button>
-              <button
-                type="submit"
-                className="pcm-btn-save"
-                disabled={isSaving}
-              >
-                {isSaving ? (
-                  <Loader2 size={14} className="pcm-btn-spinner" />
-                ) : (
-                  <Save size={14} />
-                )}
-                {isSaving
-                  ? editId !== null
-                    ? "Updating…"
-                    : "Saving…"
-                  : editId !== null
-                    ? "Update"
-                    : "Save Category"}
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       )}
 
@@ -456,7 +458,6 @@ export default function ProductCategoryMaster() {
             <thead>
               <tr>
                 <th className="pcm-th pcm-th-num w-6">#</th>
-                <th className="pcm-th w-20">Image</th>
                 <th className="pcm-th w-32">Category Name</th>
                 <th className="pcm-th pcm-th-desc w-64">Description</th>
                 <th className="pcm-th pcm-th-actions w-24">Actions</th>
@@ -468,32 +469,10 @@ export default function ProductCategoryMaster() {
                   <td className="pcm-td pcm-td-num border-r border-gray-300">
                     {(page - 1) * PAGE_SIZE + idx + 1}
                   </td>
-                  <td className="pcm-td border-r text-center border-gray-300">
-                    {row?.productCategoryImage || row?.image ? (
-                      <img
-                        src={
-                          (row?.productCategoryImage || row?.image).startsWith(
-                            "http",
-                          ) ||
-                          (row?.productCategoryImage || row?.image).startsWith(
-                            "data:",
-                          )
-                            ? row?.productCategoryImage || row?.image
-                            : `/${row?.productCategoryImage || row?.image}`
-                        }
-                        alt={row.name}
-                        className="pcm-table-img"
-                      />
-                    ) : (
-                      <div className="pcm-table-img-placeholder">
-                        <Tag size={16} />
-                      </div>
-                    )}
-                  </td>
                   <td className="pcm-td pcm-td-name border-r border-gray-300">
                     {row?.name}
                   </td>
-                  <td className="pcm-td pcm-td-desc border-r border-gray-300">
+                  <td className="pcm-td pcm-td-name border-r border-gray-300">
                     {row?.description || <span className="pcm-no-data">—</span>}
                   </td>
                   <td className="pcm-td pcm-td-actions flex justify-center">

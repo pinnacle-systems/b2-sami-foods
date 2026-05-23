@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectToken, selectIsAuthenticated } from "@/redux/features/authSlice";
+import { useAuthModal } from "./auth-modal-provider";
 
 const CartContext = createContext(undefined);
 const API_BASE = "/api";
@@ -24,6 +25,8 @@ export function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [mounted, setMounted] = useState(false);
+
+  const { openLogin } = useAuthModal();
 
   const token = useSelector(selectToken);
   const isAuth = useSelector(selectIsAuthenticated);
@@ -79,11 +82,11 @@ export function CartProvider({ children }) {
       if (isAuth && token) {
         await syncFromBackend(token);
       } else {
+        setCart([]);
+        setWishlist([]);
         try {
-          const savedCart = localStorage.getItem("b2_cart");
-          const savedWishlist = localStorage.getItem("b2_wishlist");
-          if (savedCart) setCart(JSON.parse(savedCart));
-          if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+          localStorage.removeItem("b2_cart");
+          localStorage.removeItem("b2_wishlist");
         } catch (e) {}
       }
       setMounted(true);
@@ -101,28 +104,21 @@ export function CartProvider({ children }) {
       // Just logged in — merge any local cart items, then pull backend data
       mergeAndSync(token, cart);
     } else if (!isAuth && wasAuth) {
-      // Just logged out — restore from localStorage
+      // Just logged out — clear cart & wishlist and delete local cache
+      setCart([]);
+      setWishlist([]);
       try {
-        const savedCart = localStorage.getItem("b2_cart");
-        const savedWishlist = localStorage.getItem("b2_wishlist");
-        setCart(savedCart ? JSON.parse(savedCart) : []);
-        setWishlist(savedWishlist ? JSON.parse(savedWishlist) : []);
-      } catch (e) {
-        setCart([]);
-        setWishlist([]);
-      }
+        localStorage.removeItem("b2_cart");
+        localStorage.removeItem("b2_wishlist");
+      } catch (e) {}
     }
   }, [isAuth, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Persist to localStorage when not authenticated
-  useEffect(() => {
-    if (mounted && !isAuth) {
-      localStorage.setItem("b2_cart", JSON.stringify(cart));
-      localStorage.setItem("b2_wishlist", JSON.stringify(wishlist));
-    }
-  }, [cart, wishlist, mounted, isAuth]);
-
   const addToCart = async (product, quantity = 1) => {
+    if (!isAuth) {
+      openLogin();
+      return;
+    }
     // Optimistic update
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
@@ -218,6 +214,10 @@ export function CartProvider({ children }) {
   };
 
   const toggleWishlist = async (product) => {
+    if (!isAuth) {
+      openLogin();
+      return;
+    }
     const normalized = normalizeProduct(product);
     // Optimistic update
     setWishlist((prev) => {

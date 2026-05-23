@@ -23,6 +23,8 @@ model User {
 
 model Addresses {
   id              Int     @id @default(autoincrement())
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
   name            String?
   mobile          String?
   alterNateMobile String?
@@ -40,6 +42,8 @@ model Addresses {
 
 model ProductCategory {
   id                   Int             @id @default(autoincrement())
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
   name                 String
   description          String?
   productCategoryImage String?
@@ -48,6 +52,8 @@ model ProductCategory {
 
 model ProductMaster {
   id                Int             @id @default(autoincrement())
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
   productName       String
   productImage      String?
   productcategory   ProductCategory @relation(fields: [productCategoryId], references: [id])
@@ -61,13 +67,31 @@ model ProductMaster {
   productStatus     Boolean         @default(true)
   CartItems         CartItem[]
   Wishlists         Wishlist[]
-
-  @@index([productStatus])
+   productUom         Uom? @relation("ProductUom", fields: [productuomId], references: [id])
+  productuomId       Int?
+  productqty             Float?
+  priceRange PriceRange[]
+ 
+@@index([productStatus])
   @@index([productCategoryId])
+}
+
+model PriceRange {
+  id        Int        @id @default(autoincrement())
+  productId Int
+  product   ProductMaster @relation(fields: [productId], references: [id], onDelete: Cascade)
+  uomId     Int
+  uom       Uom        @relation(fields: [uomId], references: [id], onDelete: Cascade)
+  fromQty   Float
+  toQty     Float
+  price     Float
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Cart {
   id        Int        @id @default(autoincrement())
+  
   userId    Int        @unique
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
@@ -77,6 +101,7 @@ model Cart {
 
 model CartItem {
   id        Int           @id @default(autoincrement())
+  
   cartId    Int
   cart      Cart          @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId Int
@@ -90,6 +115,8 @@ model CartItem {
 
 model Wishlist {
   id        Int           @id @default(autoincrement())
+  
+  updatedAt DateTime?   @updatedAt
   userId    Int
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId Int
@@ -98,3 +125,18 @@ model Wishlist {
 
   @@unique([userId, productId])
 }
+
+
+
+model Uom {
+    id        Int           @id @default(autoincrement())
+createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
+  name String
+  shortCode String
+  status Boolean @default(true)
+    productUomProducts ProductMaster[] @relation("ProductUom")
+    priceRange PriceRange[]
+}
+
+
