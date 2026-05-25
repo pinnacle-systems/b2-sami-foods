@@ -68,22 +68,23 @@ function validate(form, uoms = []) {
     errs.productqty = "Quantity must be a positive number";
   }
 
-  // Gram/Grams 3-digit length checks
+  // Gram/Grams/Ml 3-digit length checks
   if (form.productuomId && form.productqty !== "") {
     const selectedUom = uoms.find(u => String(u.id) === String(form.productuomId));
-    const isGram = selectedUom && (
+    const isGramOrMl = selectedUom && (
       selectedUom.name.toLowerCase() === "gram" ||
       selectedUom.name.toLowerCase() === "grams" ||
-      selectedUom.shortCode.toLowerCase() === "g"
+      selectedUom.name.toLowerCase().includes("milli") ||
+      selectedUom.shortCode.toLowerCase() === "g" ||
+      selectedUom.shortCode.toLowerCase() === "ml"
     );
-    if (isGram) {
+    if (isGramOrMl) {
       const digits = String(form.productqty).replace(/\D/g, "");
       if (digits.length > 3 || parseFloat(form.productqty) >= 1000) {
-        errs.productqty = "Only up to 3 digits allowed for Grams";
+        errs.productqty = "Only up to 3 digits allowed for Grams/Milliliters";
       }
     }
   }
-
   return errs;
 }
 
@@ -256,16 +257,19 @@ export default function ProductMaster() {
       }
     }
 
-    // Real-time digit restriction for Gram/Grams UOM
+
+    // Real-time digit restriction for Gram/Ml UOM
     if (name === "productqty") {
       const selectedUomId = form.productuomId;
       const selectedUom = uoms.find(u => String(u.id) === String(selectedUomId));
-      const isGram = selectedUom && (
+      const isGramOrMl = selectedUom && (
         selectedUom.name.toLowerCase() === "gram" ||
         selectedUom.name.toLowerCase() === "grams" ||
-        selectedUom.shortCode.toLowerCase() === "g"
+        selectedUom.name.toLowerCase().includes("milli") ||
+        selectedUom.shortCode.toLowerCase() === "g" ||
+        selectedUom.shortCode.toLowerCase() === "ml"
       );
-      if (isGram) {
+      if (isGramOrMl) {
         const digits = value.replace(/\D/g, "");
         if (digits.length > 3) {
           return;
@@ -286,15 +290,17 @@ export default function ProductMaster() {
       return next;
     });
 
-    // Real-time length slicing if UOM is changed to Gram/Grams
+    // Real-time length slicing if UOM is changed to Gram/Ml
     if (name === "productuomId") {
       const selectedUom = uoms.find(u => String(u.id) === String(value));
-      const isGram = selectedUom && (
+      const isGramOrMl = selectedUom && (
         selectedUom.name.toLowerCase() === "gram" ||
         selectedUom.name.toLowerCase() === "grams" ||
-        selectedUom.shortCode.toLowerCase() === "g"
+        selectedUom.name.toLowerCase().includes("milli") ||
+        selectedUom.shortCode.toLowerCase() === "g" ||
+        selectedUom.shortCode.toLowerCase() === "ml"
       );
-      if (isGram) {
+      if (isGramOrMl) {
         const qtyField = "productqty";
         setForm((prev) => {
           const rawQty = prev[qtyField] || "";
@@ -303,6 +309,7 @@ export default function ProductMaster() {
         });
       }
     }
+
 
     setErrors((p) => ({ ...p, [name]: "" }));
     setApiError("");
@@ -321,21 +328,6 @@ export default function ProductMaster() {
 
   const handleRangeChange = (id, field, value) => {
     if (parseFloat(value) < 0 || value.includes("-")) return;
-    const selectedUom = uoms.find((u) => String(u.id) === String(form.productuomId));
-    const isGram = selectedUom && (
-      selectedUom.name.toLowerCase() === "gram" ||
-      selectedUom.name.toLowerCase() === "grams" ||
-      selectedUom.shortCode.toLowerCase() === "g"
-    );
-    if (isGram && (field === "fromQty" || field === "toQty")) {
-      const digits = value.replace(/\D/g, "");
-      if (digits.length > 3) return;
-      setForm((prev) => ({
-        ...prev,
-        priceRanges: prev.priceRanges.map((r) => r.id === id ? { ...r, [field]: digits } : r),
-      }));
-      return;
-    }
     setForm((prev) => ({
       ...prev,
       priceRanges: prev.priceRanges.map((r) => r.id === id ? { ...r, [field]: value } : r),
@@ -343,12 +335,30 @@ export default function ProductMaster() {
   };
 
   const handleRangeBlur = (id, field, value) => {
-    if (field === "price" && value !== "") {
+    if (value === "") return;
+    if (field === "price") {
       const formatted = Number(value).toFixed(2);
       setForm((prev) => ({
         ...prev,
         priceRanges: prev.priceRanges.map((r) => r.id === id ? { ...r, price: formatted } : r),
       }));
+    } else if (field === "fromQty" || field === "toQty") {
+      const parsed = parseFloat(value);
+      if (!isNaN(parsed)) {
+        const selectedUom = uoms.find((u) => String(u.id) === String(form.productuomId));
+        const isKgOrLitre = selectedUom && (
+          selectedUom.name.toLowerCase().includes("kilo") ||
+          selectedUom.name.toLowerCase().includes("litre") ||
+          selectedUom.name.toLowerCase().includes("liter") ||
+          selectedUom.shortCode.toLowerCase() === "kg" ||
+          selectedUom.shortCode.toLowerCase() === "l"
+        );
+        const formatted = isKgOrLitre ? parsed.toFixed(3) : String(parsed);
+        setForm((prev) => ({
+          ...prev,
+          priceRanges: prev.priceRanges.map((r) => r.id === id ? { ...r, [field]: formatted } : r),
+        }));
+      }
     }
   };
 
@@ -812,7 +822,14 @@ export default function ProductMaster() {
                       onBlur={(e) => {
                         const value = parseFloat(e.target.value);
                         if (!isNaN(value)) {
-                          setForm((prev) => ({ ...prev, productqty: value.toFixed(3) }));
+                          const isKgOrLitre = selectedProductUom && (
+                            selectedProductUom.name.toLowerCase().includes("kilo") ||
+                            selectedProductUom.name.toLowerCase().includes("litre") ||
+                            selectedProductUom.name.toLowerCase().includes("liter") ||
+                            selectedProductUom.shortCode.toLowerCase() === "kg" ||
+                            selectedProductUom.shortCode.toLowerCase() === "l"
+                          );
+                          setForm((prev) => ({ ...prev, productqty: isKgOrLitre ? value.toFixed(3) : String(value) }));
                         }
                       }}
                     />
@@ -931,6 +948,7 @@ export default function ProductMaster() {
                                   className="pm-tiers-input"
                                   value={range.fromQty}
                                   onChange={(e) => handleRangeChange(range.id, "fromQty", e.target.value)}
+                                  onBlur={(e) => handleRangeBlur(range.id, "fromQty", e.target.value)}
                                 />
                               </td>
                               <td className="pm-tiers-td">
@@ -942,6 +960,7 @@ export default function ProductMaster() {
                                   className="pm-tiers-input"
                                   value={range.toQty}
                                   onChange={(e) => handleRangeChange(range.id, "toQty", e.target.value)}
+                                  onBlur={(e) => handleRangeBlur(range.id, "toQty", e.target.value)}
                                 />
                               </td>
                               <td className="pm-tiers-td">

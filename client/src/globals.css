@@ -1637,7 +1637,6 @@
 .pm-tiers-th-act { width: 30px; }
 
 .pm-tiers-tr { border-bottom: 1px solid var(--border); }
-.pm-tiers-tr:last-child { border-bottom: none; }
 .pm-tiers-tr:hover { background: oklch(0.45 0.12 145 / 0.04); }
 
 .pm-tiers-td {
