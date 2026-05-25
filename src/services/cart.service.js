@@ -2,7 +2,7 @@ import prisma from '../config/db.js'
 
 const cartInclude = {
   items: {
-    include: { product: { include: { productcategory: true } } },
+    include: { product: { include: { productcategory: true, priceRange: true } } },
     orderBy: { createdAt: 'asc' },
   },
 }

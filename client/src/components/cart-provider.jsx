@@ -250,6 +250,36 @@ export function CartProvider({ children }) {
     (total, item) => total + (item.product.price ?? 0) * item.quantity,
     0
   );
+
+  const deliveryCharge = cart.reduce((totalDelivery, item) => {
+    const product = item.product;
+    const baseQty = parseFloat(product.productqty) || 0;
+    const totalQty = baseQty * item.quantity;
+    
+    let chargeForProduct = 0;
+    const tiers = typeof product.priceRange === 'string' ? JSON.parse(product.priceRange) : (product.priceRange || product.priceRanges);
+    
+    let parsedTiers = [];
+    if (typeof tiers === 'string') {
+        try { parsedTiers = JSON.parse(tiers); } catch (e) {}
+    } else if (Array.isArray(tiers)) {
+        parsedTiers = tiers;
+    }
+
+    if (parsedTiers && parsedTiers.length > 0) {
+      for (const tier of parsedTiers) {
+        const from = parseFloat(tier.fromQty);
+        const to = parseFloat(tier.toQty);
+        if (!isNaN(from) && !isNaN(to) && totalQty >= from && totalQty <= to) {
+          chargeForProduct = parseFloat(tier.price) || 0;
+          break;
+        }
+      }
+    }
+    
+    return totalDelivery + chargeForProduct;
+  }, 0);
+
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
@@ -264,6 +294,7 @@ export function CartProvider({ children }) {
         isInWishlist,
         cartTotal,
         cartCount,
+        deliveryCharge,
         syncFromBackend,
       }}
     >

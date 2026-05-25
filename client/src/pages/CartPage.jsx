@@ -1,17 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@/components/cart-provider';
 import { Button } from '@/components/ui/button';
-import { Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowLeft, MapPin } from 'lucide-react';
 import { selectIsAuthenticated } from '@/redux/features/authSlice';
 import { useAuthModal } from '@/components/auth-modal-provider';
+import { useGetMeQuery } from '@/redux/services/authApi';
 
 export default function CartPage() {
-  const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const { cart, updateQuantity, removeFromCart, cartTotal, deliveryCharge } = useCart();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { openLogin } = useAuthModal();
   const navigate = useNavigate();
+
+  const { data: user } = useGetMeQuery(undefined, { skip: !isAuthenticated });
+  const addresses = user?.Addresses || [];
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+
+  useEffect(() => {
+    if (addresses.length > 0 && !selectedAddressId) {
+      setSelectedAddressId(addresses[0].id);
+    }
+  }, [addresses, selectedAddressId]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -76,6 +87,32 @@ export default function CartPage() {
 
         <div className="bg-card rounded-3xl p-6 border border-border h-fit">
           <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+          
+          <div className="mb-6 pb-6 border-b border-border">
+            <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-primary" /> Delivery Address
+            </h3>
+            {addresses.length === 0 ? (
+              <div className="text-sm text-muted-foreground p-3 border border-dashed rounded-xl text-center">
+                No saved addresses. 
+                <Link to="/profile" className="text-primary font-medium block mt-1 hover:underline">Add an address</Link>
+              </div>
+            ) : (
+              <select 
+                className="w-full text-sm p-3 border border-border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+                value={selectedAddressId}
+                onChange={(e) => setSelectedAddressId(Number(e.target.value))}
+              >
+                <option value="">Select Delivery Address...</option>
+                {addresses.map(addr => (
+                  <option key={addr.id} value={addr.id}>
+                    {addr.addressType} - {addr.name}, {addr.city} ({addr.pinCode})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
           <div className="space-y-3 text-sm mb-4">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal</span>
@@ -83,14 +120,14 @@ export default function CartPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Shipping</span>
-              <span className="font-medium">{cartTotal > 500 ? 'Free' : '₹50.00'}</span>
+              <span className="font-medium">{deliveryCharge === 0 ? 'Free' : `₹${deliveryCharge.toFixed(2)}`}</span>
             </div>
           </div>
           <div className="border-t border-border pt-4 mb-6">
             <div className="flex justify-between items-center">
               <span className="font-bold">Total</span>
               <span className="font-bold text-xl text-primary">
-                ₹{(cartTotal + (cartTotal > 500 || cartTotal === 0 ? 0 : 50))?.toFixed(2)}
+                ₹{(cartTotal + (deliveryCharge || 0))?.toFixed(2)}
               </span>
             </div>
           </div>
