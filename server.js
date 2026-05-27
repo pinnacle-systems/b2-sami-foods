@@ -8,6 +8,9 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import routes from './src/routes/index.js'
 import errorHandler from './src/middleware/errorHandler.js'
+import { fileURLToPath } from "url";
+
+import { dirname } from 'path'
 
 const app = express()
 const httpServer = createServer(app)
@@ -47,6 +50,17 @@ io.on('connection', (socket) => {
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const path = __dirname + "/client/dist/";
+
+app.use(express.static(path));
+
+app.get("/", function (req, res) {
+  res.sendFile(path + "index.html");
+});
+
 // Apply strict limiter to auth routes before the main router
 app.use('/api/auth/login',    authLimiter)
 app.use('/api/auth/register', authLimiter)
@@ -63,9 +77,11 @@ app.use(
   })
 )
 
+
+
 app.use('/api', routes)
 
-app.get('/', (_req, res) => res.json({ status: 'ok', message: 'B2 Sami Foods API' }))
+
 
 app.use(errorHandler)
 
