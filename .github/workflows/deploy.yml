@@ -24,7 +24,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build frontend
-        run: pnpm --filter @B2Samifoods/web run build
+        run: pnpm --filter @b2Samifoods/web run build
 
       - name: Deploy application source to VPS
         uses: easingthemes/ssh-deploy@v5.1.0
