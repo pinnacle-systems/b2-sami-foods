@@ -13,6 +13,7 @@ const Shop = lazy(() => import('./pages/Shop'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const CartPage = lazy(() => import('./pages/CartPage'))
 const WishlistPage = lazy(() => import('./pages/WishlistPage'))
+const OrdersPage = lazy(() => import('./pages/OrdersPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
@@ -60,6 +61,7 @@ export default function App() {
               <Route path="/shop/:category" element={<MainLayout><CategoryPage /></MainLayout>} />
               <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
               <Route path="/wishlist" element={<MainLayout><WishlistPage /></MainLayout>} />
+              <Route path="/orders" element={<MainLayout><OrdersPage /></MainLayout>} />
               <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
 
               {/* ── Admin area ── */}
