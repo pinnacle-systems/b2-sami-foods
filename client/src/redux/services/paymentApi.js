@@ -20,9 +20,32 @@ const paymentApi = createApi({
       }),
       providesTags: ["Order"],
     }),
+    getAllOrdersAdmin: builder.query({
+      query: () => ({
+        url: "/payment/admin/orders",
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      providesTags: ["Order"],
+    }),
+    updateDeliveryStatus: builder.mutation({
+      query: ({ id, deliveryStatus }) => ({
+        url: `/payment/admin/orders/${id}/delivery`,
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: { deliveryStatus }
+      }),
+      invalidatesTags: ["Order"],
+    }),
   }),
 })
 
-export const { useGetOrdersQuery } = paymentApi
+export const { useGetOrdersQuery, useGetAllOrdersAdminQuery, useUpdateDeliveryStatusMutation } = paymentApi
 
 export default paymentApi

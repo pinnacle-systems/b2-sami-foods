@@ -22,6 +22,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const ProductCategoryMaster = lazy(() => import('./pages/admin/ProductCategoryMaster'))
 const ProductMaster = lazy(() => import('./pages/admin/ProductMaster'))
 const UomMaster = lazy(() => import('./pages/admin/UomMaster'))
+const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
 function PageLoader() {
@@ -72,6 +73,7 @@ export default function App() {
                   <Route path="product-category" element={<ProductCategoryMaster />} />
                   <Route path="product-master" element={<ProductMaster />} />
                   <Route path="uom-master" element={<UomMaster />} />
+                  <Route path="orders" element={<AdminOrdersPage />} />
                 </Route>
               </Route>
             </Routes>

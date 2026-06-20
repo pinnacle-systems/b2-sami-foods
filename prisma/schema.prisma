@@ -37,7 +37,7 @@ model Addresses {
   addressType     String?
   userId          Int?
   user            User?   @relation(fields: [userId], references: [id])
-
+Orders          Order[]
   @@index([userId])
 }
 
@@ -145,8 +145,12 @@ model Order {
   id               Int         @id @default(autoincrement())
   userId           Int
   user             User        @relation(fields: [userId], references: [id])
+
   totalAmount      Float
   status           String      @default("PENDING") // PENDING, PAID, FAILED
+   deliveryStatus    String      @default("Order Placed") // <-- ADD THIS LINE
+  addressId         Int?                                 // <-- ADD THIS LINE
+  address           Addresses?  @relation(fields: [addressId], references: [id]) // <-- ADD 
   razorpayOrderId  String?     @unique
   razorpayPaymentId String?    @unique
   razorpaySignature String?

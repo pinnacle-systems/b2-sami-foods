@@ -60,10 +60,11 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           totalAmount: cartTotal + (deliveryCharge || 0),
+          addressId: selectedAddressId,
           items: cart.map(item => ({
              productId: item.product.id,
              quantity: item.quantity,
-             price: item.product.discountPrice || item.product.originalPrice || 0
+             price: item.product.price
           }))
         })
       });
