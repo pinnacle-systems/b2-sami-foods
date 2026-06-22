@@ -7,12 +7,16 @@ import { Minus, Plus, Trash2, ArrowLeft, MapPin } from 'lucide-react';
 import { selectIsAuthenticated } from '@/redux/features/authSlice';
 import { useAuthModal } from '@/components/auth-modal-provider';
 import { useGetMeQuery } from '@/redux/services/authApi';
+import { useCreateOrderMutation, useVerifyPaymentMutation } from '@/redux/services/paymentApi';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, cartTotal, deliveryCharge, syncFromBackend } = useCart();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { openLogin } = useAuthModal();
   const navigate = useNavigate();
+
+  const [createOrder, { isLoading: isCreating }] = useCreateOrderMutation();
+  const [verifyPayment, { isLoading: isVerifying }] = useVerifyPaymentMutation();
 
   const { data: user } = useGetMeQuery(undefined, { skip: !isAuthenticated });
   const addresses = user?.Addresses || [];
@@ -54,21 +58,15 @@ export default function CartPage() {
     }
     
     try {
-      const token = localStorage.getItem("token");
-      const orderRes = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          totalAmount: cartTotal + (deliveryCharge || 0),
-          addressId: selectedAddressId,
-          items: cart.map(item => ({
-             productId: item.product.id,
-             quantity: item.quantity,
-             price: item.product.price
-          }))
-        })
-      });
-      const orderData = await orderRes.json();
+      const orderData = await createOrder({
+        totalAmount: cartTotal + (deliveryCharge || 0),
+        addressId: selectedAddressId,
+        items: cart.map(item => ({
+           productId: item.product.id,
+           quantity: item.quantity,
+           price: item.product.price
+        }))
+      }).unwrap();
       
       if (!orderData.success) {
         alert("Server error. Please try again");
@@ -80,24 +78,24 @@ export default function CartPage() {
         amount: orderData.razorpayOrder.amount,
         currency: "INR",
         name: "Sami Foods",
-        description: "Test Transaction",
+        description: "Order Payment",
         order_id: orderData.razorpayOrder.id,
         handler: async function (response) {
-          const verifyRes = await fetch("/api/payment/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({
+          try {
+            const verifyData = await verifyPayment({
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-            })
-          });
-          const verifyData = await verifyRes.json();
-          if(verifyData.success) {
-            alert("Payment Successful!");
-            await syncFromBackend(token);
-            navigate("/orders");
-          } else {
+            }).unwrap();
+
+            if(verifyData.success) {
+              alert("Payment Successful!");
+              await syncFromBackend(localStorage.getItem("token"));
+              navigate("/orders");
+            } else {
+              alert("Payment Verification Failed");
+            }
+          } catch(err) {
             alert("Payment Verification Failed");
           }
         },

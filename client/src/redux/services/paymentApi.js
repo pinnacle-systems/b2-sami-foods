@@ -43,9 +43,32 @@ const paymentApi = createApi({
       }),
       invalidatesTags: ["Order"],
     }),
+    createOrder: builder.mutation({
+      query: (body) => ({
+        url: "/payment/create-order",
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body
+      }),
+    }),
+    verifyPayment: builder.mutation({
+      query: (body) => ({
+        url: "/payment/verify",
+        method: "POST",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body
+      }),
+      invalidatesTags: ["Order"],
+    }),
   }),
 })
 
-export const { useGetOrdersQuery, useGetAllOrdersAdminQuery, useUpdateDeliveryStatusMutation } = paymentApi
+export const { useGetOrdersQuery, useGetAllOrdersAdminQuery, useUpdateDeliveryStatusMutation, useCreateOrderMutation, useVerifyPaymentMutation } = paymentApi
 
 export default paymentApi
