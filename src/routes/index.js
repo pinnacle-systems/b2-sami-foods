@@ -5,6 +5,7 @@ import productRoutes from './product.routes.js'
 import cartRoutes from './cart.routes.js'
 import wishlistRoutes from './wishlist.routes.js'
 import uomRoutes from './uom.routes.js'
+import paymentRoutes from './payment.routes.js'
 
 const router = Router()
 
@@ -14,5 +15,6 @@ router.use('/products',           productRoutes)
 router.use('/cart',               cartRoutes)
 router.use('/wishlist',           wishlistRoutes)
 router.use('/uoms',               uomRoutes)
+router.use('/payment',            paymentRoutes)
 
 export default router

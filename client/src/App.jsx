@@ -13,6 +13,7 @@ const Shop = lazy(() => import('./pages/Shop'))
 const CategoryPage = lazy(() => import('./pages/CategoryPage'))
 const CartPage = lazy(() => import('./pages/CartPage'))
 const WishlistPage = lazy(() => import('./pages/WishlistPage'))
+const OrdersPage = lazy(() => import('./pages/OrdersPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
@@ -21,6 +22,7 @@ const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const ProductCategoryMaster = lazy(() => import('./pages/admin/ProductCategoryMaster'))
 const ProductMaster = lazy(() => import('./pages/admin/ProductMaster'))
 const UomMaster = lazy(() => import('./pages/admin/UomMaster'))
+const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage'))
 const ProfilePage = lazy(() => import('./pages/ProfilePage'))
 
 function PageLoader() {
@@ -60,6 +62,7 @@ export default function App() {
               <Route path="/shop/:category" element={<MainLayout><CategoryPage /></MainLayout>} />
               <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
               <Route path="/wishlist" element={<MainLayout><WishlistPage /></MainLayout>} />
+              <Route path="/orders" element={<MainLayout><OrdersPage /></MainLayout>} />
               <Route path="/profile" element={<MainLayout><ProfilePage /></MainLayout>} />
 
               {/* ── Admin area ── */}
@@ -70,6 +73,7 @@ export default function App() {
                   <Route path="product-category" element={<ProductCategoryMaster />} />
                   <Route path="product-master" element={<ProductMaster />} />
                   <Route path="uom-master" element={<UomMaster />} />
+                  <Route path="orders" element={<AdminOrdersPage />} />
                 </Route>
               </Route>
             </Routes>

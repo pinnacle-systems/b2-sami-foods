@@ -7,12 +7,16 @@ import { Minus, Plus, Trash2, ArrowLeft, MapPin } from 'lucide-react';
 import { selectIsAuthenticated } from '@/redux/features/authSlice';
 import { useAuthModal } from '@/components/auth-modal-provider';
 import { useGetMeQuery } from '@/redux/services/authApi';
+import { useCreateOrderMutation, useVerifyPaymentMutation } from '@/redux/services/paymentApi';
 
 export default function CartPage() {
-  const { cart, updateQuantity, removeFromCart, cartTotal, deliveryCharge } = useCart();
+  const { cart, updateQuantity, removeFromCart, cartTotal, deliveryCharge, syncFromBackend } = useCart();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { openLogin } = useAuthModal();
   const navigate = useNavigate();
+
+  const [createOrder, { isLoading: isCreating }] = useCreateOrderMutation();
+  const [verifyPayment, { isLoading: isVerifying }] = useVerifyPaymentMutation();
 
   const { data: user } = useGetMeQuery(undefined, { skip: !isAuthenticated });
   const addresses = user?.Addresses || [];
@@ -30,6 +34,88 @@ export default function CartPage() {
       openLogin();
     }
   }, [isAuthenticated, navigate, openLogin]);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleCheckout = async () => {
+    if (!selectedAddressId) {
+      alert("Please select a delivery address");
+      return;
+    }
+    
+    const res = await loadRazorpayScript();
+    if (!res) {
+      alert("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+    
+    try {
+      const orderData = await createOrder({
+        totalAmount: cartTotal + (deliveryCharge || 0),
+        addressId: selectedAddressId,
+        items: cart.map(item => ({
+           productId: item.product.id,
+           quantity: item.quantity,
+           price: item.product.price
+        }))
+      }).unwrap();
+      
+      if (!orderData.success) {
+        alert("Server error. Please try again");
+        return;
+      }
+      
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderData.razorpayOrder.amount,
+        currency: "INR",
+        name: "Sami Foods",
+        description: "Order Payment",
+        order_id: orderData.razorpayOrder.id,
+        handler: async function (response) {
+          try {
+            const verifyData = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }).unwrap();
+
+            if(verifyData.success) {
+              alert("Payment Successful!");
+              await syncFromBackend(localStorage.getItem("token"));
+              navigate("/orders");
+            } else {
+              alert("Payment Verification Failed");
+            }
+          } catch(err) {
+            alert("Payment Verification Failed");
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+          contact: user?.mobile
+        },
+        theme: {
+          color: "#0f172a" // Tailwind Slate 900
+        }
+      };
+      
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    } catch(err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
   return (<div className="min-h-screen pt-24 pb-12 bg-background">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -131,7 +217,7 @@ export default function CartPage() {
               </span>
             </div>
           </div>
-          <Button className="w-full rounded-full" size="lg">Proceed to Checkout</Button>
+          <Button className="w-full rounded-full" size="lg" onClick={handleCheckout}>Proceed to Checkout</Button>
         </div>
       </div>)}
     </div>

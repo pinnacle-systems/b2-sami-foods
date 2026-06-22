@@ -6,6 +6,7 @@ import productApi from "./services/productApi"
 import cartApi from "./services/cartApi"
 import wishlistApi from "./services/wishlistApi"
 import uomApi from "./services/uomApi"
+import paymentApi from "./services/paymentApi"
 
 // Auto-logout on any 401 response from any RTK Query endpoint
 const authErrorMiddleware = (api) => (next) => (action) => {
@@ -24,6 +25,7 @@ const store = configureStore({
     [cartApi.reducerPath]:            cartApi.reducer,
     [wishlistApi.reducerPath]:        wishlistApi.reducer,
     [uomApi.reducerPath]:             uomApi.reducer,
+    [paymentApi.reducerPath]:         paymentApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -33,7 +35,8 @@ const store = configureStore({
       .concat(productApi.middleware)
       .concat(cartApi.middleware)
       .concat(wishlistApi.middleware)
-      .concat(uomApi.middleware),
+      .concat(uomApi.middleware)
+      .concat(paymentApi.middleware),
 })
 
 export default store

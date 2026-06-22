@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Tag, Package, LogOut, Menu, X, ShieldCheck, Sun, Moon, Scale } from "lucide-react"
+import { LayoutDashboard, Tag, Package, LogOut, Menu, X, ShieldCheck, Sun, Moon, Scale, ShoppingCart } from "lucide-react"
 import { useAppDispatch, useAppSelector } from "../../redux/Dispatch/useAppDispatch"
 import { logout, selectCurrentUser } from "../../redux/features/authSlice"
 import { useAdminTheme } from "../../hooks/useAdminTheme"
@@ -10,6 +10,7 @@ const navItems = [
   { label: "Product Category Master", to: "/admin/product-category", icon: Tag },
   { label: "Product Master",          to: "/admin/product-master",   icon: Package },
   { label: "UOM Master",              to: "/admin/uom-master",       icon: Scale },
+  { label: "Orders",                  to: "/admin/orders",           icon: ShoppingCart },
 ]
 
 export default function AdminLayout() {
