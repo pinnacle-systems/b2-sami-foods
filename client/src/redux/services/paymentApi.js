@@ -1,6 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const BASE_URL = process.env.REACT_APP_SERVER_URL || "/api"
+const BASE_URL = process.env.REACT_APP_SERVER_URL || "/api";
 
 const paymentApi = createApi({
   reducerPath: "paymentApi",
@@ -31,6 +31,17 @@ const paymentApi = createApi({
       }),
       providesTags: ["Order"],
     }),
+    getOneOrderAdmin: builder.query({
+      query: (id) => ({
+        url: `/payment/admin/orders/${id}`,
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }),
+      providesTags: (result, error, id) => [{ type: "Order", id }],
+    }),
     updateDeliveryStatus: builder.mutation({
       query: ({ id, deliveryStatus }) => ({
         url: `/payment/admin/orders/${id}/delivery`,
@@ -39,7 +50,7 @@ const paymentApi = createApi({
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: { deliveryStatus }
+        body: { deliveryStatus },
       }),
       invalidatesTags: ["Order"],
     }),
@@ -51,7 +62,7 @@ const paymentApi = createApi({
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body
+        body,
       }),
     }),
     verifyPayment: builder.mutation({
@@ -62,13 +73,20 @@ const paymentApi = createApi({
           "Content-type": "application/json; charset=UTF-8",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body
+        body,
       }),
       invalidatesTags: ["Order"],
     }),
   }),
-})
+});
 
-export const { useGetOrdersQuery, useGetAllOrdersAdminQuery, useUpdateDeliveryStatusMutation, useCreateOrderMutation, useVerifyPaymentMutation } = paymentApi
+export const {
+  useGetOrdersQuery,
+  useGetAllOrdersAdminQuery,
+  useUpdateDeliveryStatusMutation,
+  useCreateOrderMutation,
+  useVerifyPaymentMutation,
+  useGetOneOrderAdminQuery,
+} = paymentApi;
 
-export default paymentApi
+export default paymentApi;
